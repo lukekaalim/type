@@ -12,50 +12,44 @@ class UnknownTypeIDError extends Error {
   }
 }
 
-const testIdMatch = (typeAId, typeBId) => typeAId === typeBId;
-const testBranchesMatch = (typeMap, typeA, typeBId) => typeA.branches.every(typeABranch =>
-  areTypesCompatible(typeMap, typeABranch, typeBId)
-);
-const testImplementsMatch = (typeMap, typeA, typeBId) => !!typeA.implements.find(
-  implementsTypeId => areTypesCompatible(typeMap, implementsTypeId, typeBId)
-);
-
 const areTypesCompatible = (
   state/*: State*/,
   typeAId/*: TypeID*/,
   typeBId/*: TypeID*/,
-)/*: boolean*/ => {
+) => {
   const typeA = state.typeMap.get(typeAId);
-  const typeB = state.typeMap.get(typeBId);
-
-  if (!typeA || !typeB) {
+  if (!typeA) {
     throw new UnknownTypeIDError();
   }
-
-  const testTypeAndId = (type, typeId) => {
-    switch (type.type) {
-      case 'simple':
-        return testIdMatch(type.id, typeId);
-      case 'branching':
-        return testIdMatch(type.id, typeId) || testBranchesMatch(state, type, typeId);
-      case 'implementing':
-        return testIdMatch(type.id, typeId) || testImplementsMatch(state, type, typeId);
-      default:
-        throw new UnimplementedError(`Type Compatibility For ${type.type}`);
-    }
-  };
-
+  // Equality shortcut
+  if (typeAId === typeBId) {
+    return true;
+  }
+  // So now we know that the IDs are not equal
   switch (typeA.type) {
-    case 'simple':
-      return testTypeAndId(typeB, typeA.id);
+    case 'simple': {
+      const typeB = state.typeMap.get(typeBId);
+      if (!typeB) {
+        throw new UnknownTypeIDError();
+      }
+      if (typeB.type === 'simple') {
+        // If both were simple types, and they were not equal, that's an automatic fail
+        return false;
+      }
+      return areTypesCompatible(state, typeB.id, typeA.id);
+    }
     case 'branching':
-      return testTypeAndId(typeB, typeA.id) ||
-        typeA.branches.every(typeABranchTypeId => areTypesCompatible(state, typeABranchTypeId, typeB.id));
+      return typeA.branches.every(branchId =>
+        // Loop though each branch, and if they are all equal, it's compatible
+        areTypesCompatible(state, branchId, typeBId)
+      );
     case 'implementing':
-      return testTypeAndId(typeB, typeA.id) ||
-        !!typeA.implements.find(typeAImplementsType => areTypesCompatible(state, typeAImplementsType, typeB.id));
+      return !!typeA.implements.find(implementedId =>
+        // Loop through each implementation; if any of them match, it's compatible
+        areTypesCompatible(state, implementedId, typeBId)
+      )
     default:
-      throw new UnimplementedError(`Type Compatibility between ${typeA.type} & ${typeB.type}`);
+      throw new UnimplementedError(`Type Compatibility For ${typeA.type}`);
   }
 };
 
