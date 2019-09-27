@@ -6,6 +6,13 @@ class UnimplementedError extends Error {
   }
 }
 
+class UnknownTypeIDError extends Error {
+  constructor() {
+    super(`The provided type ID was not in the typemap`);
+  }
+}
+
 module.exports = {
   UnimplementedError,
+  UnknownTypeIDError,
 };

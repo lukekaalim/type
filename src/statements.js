@@ -23,6 +23,11 @@ const declare = (typeId/*: TypeID*/, typeTokenId/*: TokenID*/)/*: DeclareStateme
   typeTokenId,
 });
 
+const branch = () => ({
+  type: 'branch',
+  branches: [],
+});
+
 module.exports = {
   declare,
 };

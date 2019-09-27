@@ -4,13 +4,7 @@ import type { Type, TypeID } from './type';
 import type { State } from './state';
 */
 const { memoize } = require('lodash');
-const { UnimplementedError } = require('./errors');
-
-class UnknownTypeIDError extends Error {
-  constructor() {
-    super(`The provided type ID was not in the typemap`);
-  }
-}
+const { UnimplementedError, UnknownTypeIDError } = require('./errors');
 
 const areTypesCompatible = (
   state/*: State*/,

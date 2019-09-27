@@ -14,6 +14,8 @@ const DEFAULT_STATE = {
   errors: [],
   typeMap: new Map(),
   tokenMap: new Map(),
+  refinements: [],
+  branches: [],
 };
 
 const createProgram = (statements/*: Array<Statement>*/) => ({
