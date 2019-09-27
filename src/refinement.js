@@ -3,6 +3,7 @@ const { UnknownTypeIDError } = require('./errors');
 const { createSimpleType, createImplementingType, createBranchingType } = require('./type');
 /*::
 import type { Type, TypeID, ImplementingType } from './type';
+import type { Token } from './token';
 
 import type { State } from './state';
 export type Refinement = {
@@ -16,7 +17,7 @@ export type Variant<T: Type> = {
 };
 */
 
-const generateVariantsFromType = /*::<T: Type>*/(state/*: State*/, type/*: T*/)/*: $ReadOnlyArray<Variant<Type>>*/ => {
+const generateVariantsFromType = /*::<T: Type>*/(state/*: State*/, token/*: Token*/, type/*: T*/)/*: $ReadOnlyArray<Variant<Type>>*/ => {
   switch (type.type) {
     case 'implementing': {
       const implementingType = type;
@@ -35,7 +36,7 @@ const generateVariantsFromType = /*::<T: Type>*/(state/*: State*/, type/*: T*/)/
       for (const [implementsTypeId, implementsType] of implementsTypeMap.entries()) {
         const newVariants = [];
         for (const previousVariant of variants) {
-          const implementsVariants = generateVariantsFromType(previousVariant.state, implementsType);
+          const implementsVariants = generateVariantsFromType(previousVariant.state, token, implementsType);
           for (const implementsVariant of implementsVariants) {
             const refinedImplementsId = previousVariant.type;
             const newImplementingType = createImplementingType([...refinedImplementsId.implements.filter(a => a !== implementsTypeId), implementsVariant.type.id]);
@@ -65,7 +66,19 @@ const generateVariantsFromType = /*::<T: Type>*/(state/*: State*/, type/*: T*/)/
           throw new UnknownTypeIDError();
         }
         // get all the variants of each branch
-        const branchVariants = generateVariantsFromType(state, branchType);
+        const branchVariants = generateVariantsFromType(state, token, branchType);
+        const assignedVariants = [];
+        for (const variant of branchVariants) {
+          const tokenMap = new Map(variant.state.tokenMap).set(token.id, variant.type.id);
+          const newState = {
+            ...state,
+            tokenMap,
+          }
+          assignedVariants.push({
+            ...variant,
+            state: newState,
+          });
+        }
         // Add each branch's variants directly to variant list
         variants.push(...branchVariants);
       }

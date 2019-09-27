@@ -8,7 +8,8 @@ import type { Refinement } from './refinement';
 export type State = {
   errors: Array<Error>,
   typeMap: Map<TypeID, Type>,
-  tokenMap: Map<TokenID, Token>,
+  tokens: Set<Token>,
+  tokenMap: Map<TokenID, TypeID>,
   refinements: Array<Refinement>,
   branches: Array<State>,
 }
@@ -26,6 +27,7 @@ const createState = ()/*: State*/ => ({
   errors: [],
   typeMap: new Map(),
   tokenMap: new Map(),
+  tokens: new Set(),
   branches: [],
   refinements: [],
 });

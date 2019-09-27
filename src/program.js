@@ -13,6 +13,7 @@ const { reduceState } = require('./state');
 const DEFAULT_STATE = {
   errors: [],
   typeMap: new Map(),
+  tokens: new Set(),
   tokenMap: new Map(),
   refinements: [],
   branches: [],
