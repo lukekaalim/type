@@ -3,7 +3,6 @@
 import type { Type, TypeID } from './type';
 import type { State } from './state';
 */
-const { memoize } = require('lodash');
 const { UnimplementedError, UnknownTypeIDError } = require('./errors');
 
 const areTypesCompatible = (
