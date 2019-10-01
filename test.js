@@ -9,37 +9,26 @@ const { inspect } = require('util')
 const test = () => {
   console.log('-- refinement --');
   const trueT = createSimpleType();
-  const falseA = createSimpleType();
-  const falseB = createSimpleType();
+  const falseT = createSimpleType();
+  const boolean = createBranchingType([trueT.id, falseT.id]);
 
-  const E = createBranchingType([trueT.id, falseA.id, falseB.id]);
-  const D = createImplementingType([E.id]);
-
-  const mainToken = createToken();
-  const tokens = new Set([mainToken]);
   const typeMap = new Map([
     [trueT.id, trueT],
-    [falseA.id, falseA],
-    [falseB.id, falseB],
-    [E.id, E],
-    [D.id, D],
+    [falseT.id, falseT],
+    [boolean.id, boolean],
   ]);
-  const tokenMap = new Map([
-    [mainToken.id, D.id]
-  ]);
+
   const state = {
     ...createState(),
-    tokenMap,
     typeMap,
   };
 
-  const variants = generateVariantsFromType(state, mainToken, D);
+  const variants = generateVariantsFromType(state, boolean.id);
+  console.log(variants.length);
 
-  console.log(inspect(state, { depth: null }));
-
-  for (const variant of variants) {
-    console.log(inspect(variant, { showHidden: false, depth: null }))
-  }
+  variants.map(([variantState, variantType]) => {
+    console.log(areTypesCompatible(variantState, variantType, trueT.id))
+  })
 };
 
 test();
