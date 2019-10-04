@@ -5,10 +5,9 @@ import type { TypeID, Type } from './type';
 import type { TokenID, Token } from './token';
 
 export type State = {
-  errors: Array<Error>,
-  typeMap: Map<TypeID, Type>,
-  tokens: Set<Token>,
-  tokenMap: Map<TokenID, TypeID>,
+  types: Map<TypeID, Type>,
+  tokens: Map<TokenID, Token>,
+  tokenTypeMap: Map<TokenID, TypeID>
 }
 */
 const { UnimplementedError } = require('./errors');
@@ -21,12 +20,9 @@ const reduceState = (state/*: State*/, statement/*: Statement*/) => {
 };
 
 const createState = ()/*: State*/ => ({
-  errors: [],
-  typeMap: new Map(),
-  tokenMap: new Map(),
-  tokens: new Set(),
-  branches: [],
-  refinements: [],
+  types: new Map(),
+  tokens: new Map(),
+  tokenTypeMap: new Map(),
 });
 
 module.exports = {

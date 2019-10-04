@@ -11,10 +11,9 @@ import type { State } from './state';
 // SHould create new types and add them to the state
 
 const generateVariantsFromType = (state/*: State*/, typeId/*: TypeID*/)/*: Array<[State, TypeID]>*/ => {
-  const type = state.typeMap.get(typeId);
+  const type = state.types.get(typeId);
   if (!type)
     throw new Error();
-  console.log(type);
   switch (type.type) {
     case 'implementing': {
       // For each type we implement, generate a set of variants
@@ -27,7 +26,7 @@ const generateVariantsFromType = (state/*: State*/, typeId/*: TypeID*/)/*: Array
           const newVariantsForImplementedType = variantsOfImplementedType.map(([implementsState, typeId]) => {
             const newVariantType = createImplementingType([...variantType.implements.filter(id => id !== implementsId), typeId]);
             const newVariantState = {
-              ...implementsState, typeMap: new Map(implementsState.typeMap).set(newVariantType.id, newVariantType),
+              ...implementsState, typeMap: new Map(implementsState.types).set(newVariantType.id, newVariantType),
             };
             return [newVariantState, newVariantType];
           });

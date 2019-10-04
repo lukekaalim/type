@@ -10,7 +10,7 @@ const areTypesCompatible = (
   typeAId/*: TypeID*/,
   typeBId/*: TypeID*/,
 ) => {
-  const typeA = state.typeMap.get(typeAId);
+  const typeA = state.types.get(typeAId);
   if (!typeA) {
     throw new UnknownTypeIDError();
   }
@@ -21,7 +21,7 @@ const areTypesCompatible = (
   // So now we know that the IDs are not equal
   switch (typeA.type) {
     case 'simple': {
-      const typeB = state.typeMap.get(typeBId);
+      const typeB = state.types.get(typeBId);
       if (!typeB) {
         throw new UnknownTypeIDError();
       }

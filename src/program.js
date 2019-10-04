@@ -8,16 +8,9 @@ type Program = {
   statements: Array<Statement>,
 };
 */
-const { reduceState } = require('./state');
+const { reduceState, createState } = require('./state');
 
-const DEFAULT_STATE = {
-  errors: [],
-  typeMap: new Map(),
-  tokens: new Set(),
-  tokenMap: new Map(),
-  refinements: [],
-  branches: [],
-};
+const DEFAULT_STATE = createState();
 
 const createProgram = (statements/*: Array<Statement>*/) => ({
   statements,
