@@ -16,8 +16,8 @@ const createProgram = (statements/*: Array<Statement>*/) => ({
   statements,
 });
 
-const getProgramState = (program/*: Program*/, initialState/*: State*/ = DEFAULT_STATE)/*: State*/ => {
-  return program.statements.reduce(reduceState, initialState);
+const getProgramState = (program/*: Program*/, initialState/*: State*/ = DEFAULT_STATE) => {
+  return program.statements.reduce(reduceState, [initialState]);
 };
 
 module.exports = {
