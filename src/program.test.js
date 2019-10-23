@@ -14,7 +14,7 @@ const test = () => {
   const falseType = createSimpleType();
   const nullType = createSimpleType();
 
-  const falsyType = createImplementingType([nullType.id, falseType.id]);
+  const falsyType = createBranchingType([nullType.id, falseType.id]);
 
   const alphaType = createSimpleType();
   const betaType = createSimpleType();
@@ -35,7 +35,6 @@ const test = () => {
     [falsyType.id, 'falsy'],
     [nullType.id, 'null']
   ]);
-  console.log(typeNameMap);
 
   const program = createProgram([
     createDeclareTypeStatement(nullType),
@@ -55,11 +54,10 @@ const test = () => {
         createDeclareInstanceStatement(alphaInstance),
         createDeclareReturnStatement(alphaInstance.id)
       ]),
-      createProgram([
-        createDeclareInstanceStatement(betaInstance),
-        createDeclareReturnStatement(betaInstance.id)
-      ]),
+      createProgram([]),
     ),
+    createDeclareInstanceStatement(betaInstance),
+    createDeclareReturnStatement(betaInstance.id),
   ]);
   const states = getProgramState(program);
   

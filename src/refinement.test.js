@@ -23,7 +23,7 @@ const test = () => {
     typeMap,
   };
 
-  const variants = generateVariantsFromType(state, boolean.id);
+  const variants = generateVariantsFromType(state.types, boolean.id);
   console.log(variants.length);
 
   variants.map(([variantState, variantType]) => {

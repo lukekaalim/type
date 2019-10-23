@@ -29,8 +29,8 @@ const testBranchingType = () => {
   
 
   console.log('-- Branching Types are compatible if every branch is compatible --');
-  console.log('A == D', areTypesCompatible(state, typeA.id, typeD.id));
-  console.log('A != E', !areTypesCompatible(state, typeA.id, typeE.id));
+  console.log('A == D', areTypesCompatible(state.types, typeA.id, typeD.id));
+  console.log('A != E', !areTypesCompatible(state.types, typeA.id, typeE.id));
 };
 
 const testImplementingType = () => {
@@ -54,12 +54,12 @@ const testImplementingType = () => {
   };
 
   console.log('-- Implementing Type are compatible if any of the implementors are compatible --');
-  console.log('C == B', areTypesCompatible(state, typeB.id, typeC.id));
-  console.log('B == C', areTypesCompatible(state, typeC.id, typeB.id));
-  console.log('C == C', areTypesCompatible(state, typeC.id, typeC.id));
-  console.log('B == B', areTypesCompatible(state, typeB.id, typeB.id));
-  console.log('A == B', areTypesCompatible(state, typeA.id, typeB.id));
-  console.log('D != C', !areTypesCompatible(state, typeD.id, typeC.id));
+  console.log('C == B', areTypesCompatible(state.types, typeB.id, typeC.id));
+  console.log('B == C', areTypesCompatible(state.types, typeC.id, typeB.id));
+  console.log('C == C', areTypesCompatible(state.types, typeC.id, typeC.id));
+  console.log('B == B', areTypesCompatible(state.types, typeB.id, typeB.id));
+  console.log('A == B', areTypesCompatible(state.types, typeA.id, typeB.id));
+  console.log('D != C', !areTypesCompatible(state.types, typeD.id, typeC.id));
 }
 
 const testSimpleTypes = () => {
@@ -76,10 +76,10 @@ const testSimpleTypes = () => {
   };
 
   console.log('-- Simple Type --');
-  console.log('A != B', !areTypesCompatible(state, typeB.id, typeA.id));
-  console.log('B != A', !areTypesCompatible(state, typeA.id, typeB.id));
-  console.log('A == A', areTypesCompatible(state, typeA.id, typeA.id));
-  console.log('B == B', areTypesCompatible(state, typeB.id, typeB.id));
+  console.log('A != B', !areTypesCompatible(state.types, typeB.id, typeA.id));
+  console.log('B != A', !areTypesCompatible(state.types, typeA.id, typeB.id));
+  console.log('A == A', areTypesCompatible(state.types, typeA.id, typeA.id));
+  console.log('B == B', areTypesCompatible(state.types, typeB.id, typeB.id));
 }
 
 const test = async () => {
