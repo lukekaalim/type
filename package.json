@@ -4,6 +4,7 @@
   "description": "Small perfomant comment-based typesystem for javascript",
   "main": "src/index",
   "dependencies": {
+    "immutable": "^4.0.0-rc.12",
     "uuid": "^3.3.3"
   },
   "devDependencies": {},

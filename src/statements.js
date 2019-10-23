@@ -1,33 +1,79 @@
 // @flow strict
 const generateUUID = require('uuid/v4');
 /*::
-import type { TypeID } from './type';
+import type { TypeID, Type } from './type';
+import type { Instance, InstanceID } from './instance';
 import type { TokenID } from './token';
+import type { Program } from './program';
 
 export opaque type StatementID: string = string;
-export type DeclareStatement = {
+
+export type DeclareTypeStatement = {
   id: StatementID,
   type: 'declare-type',
-  typeId: TypeID,
-  typeTokenId: TokenID,
+  declaredType: Type,
+};
+export type DeclareInstanceStatement = {
+  id: StatementID,
+  type: 'declare-instance',
+  declaredInstance: Instance,
+};
+export type DeclareReturnStatement = {
+  id: StatementID,
+  type: 'declare-return',
+  declaredReturnInstanceID: InstanceID,
+};
+export type DeclareIfBranchStatement = {
+  id: StatementID,
+  type: 'declare-if-branch',
+  targetTypeId: TypeID,
+  instanceIdToRefine: InstanceID,
+  hitProgram: Program,
+  missProgram: Program,
 };
 
 export type Statement =
-  | DeclareStatement
+  | DeclareTypeStatement
+  | DeclareInstanceStatement
+  | DeclareReturnStatement
+  | DeclareIfBranchStatement
 */
 
-const declare = (typeId/*: TypeID*/, typeTokenId/*: TokenID*/)/*: DeclareStatement*/ => ({
-  type: 'declare-type',
+const createDeclareTypeStatement = (declaredType/*: Type*/)/*: DeclareTypeStatement*/ => ({
   id: generateUUID(),
-  typeId,
-  typeTokenId,
+  type: 'declare-type',
+  declaredType,
 });
 
-const branch = () => ({
-  type: 'branch',
-  branches: [],
+const createDeclareInstanceStatement = (declaredInstance/*: Instance*/)/*: DeclareInstanceStatement*/ => ({
+  id: generateUUID(),
+  type: 'declare-instance',
+  declaredInstance,
+});
+
+const createDeclareReturnStatement = (declaredReturnInstanceID/*: InstanceID*/)/*: DeclareReturnStatement*/ => ({
+  id: generateUUID(),
+  type: 'declare-return',
+  declaredReturnInstanceID,
+});
+
+const createDeclareIfBranchStatement = (
+  instanceIdToRefine/*: InstanceID*/,
+  targetTypeId/*: TypeID*/,
+  hitProgram/*: Program*/,
+  missProgram/*: Program*/,
+)/*: DeclareIfBranchStatement*/ => ({
+  id: generateUUID(),
+  type: 'declare-if-branch',
+  instanceIdToRefine,
+  targetTypeId,
+  hitProgram,
+  missProgram,
 });
 
 module.exports = {
-  declare,
+  createDeclareInstanceStatement,
+  createDeclareTypeStatement,
+  createDeclareReturnStatement,
+  createDeclareIfBranchStatement,
 };
