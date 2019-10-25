@@ -1,9 +1,8 @@
 // @flow strict
 const { generateVariantsFromType } = require('./refinement');
 const { areTypesCompatible } = require('./compatibility');
-const { createState } = require('./state');
+const { createState } = require('./program');
 const { createSimpleType, createImplementingType, createBranchingType } = require('./type');
-const { createToken } = require('./token');
 const { inspect } = require('util')
 
 const test = () => {

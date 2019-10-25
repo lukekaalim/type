@@ -1,7 +1,7 @@
 // @flow strict
 /*::
 import type { Type, TypeID } from './type';
-import type { State } from './state';
+import type { State } from './program';
 import type { Map } from 'immutable';
 */
 const { UnimplementedError, UnknownTypeIDError } = require('./errors');

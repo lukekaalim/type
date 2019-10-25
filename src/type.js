@@ -5,7 +5,6 @@ const generateUUID = require('uuid/v4');
 export opaque type TypeID: string = string;
 export type SimpleType = {
   type: 'simple',
-  name: string,
   id: TypeID,
 }
 export type BranchType = {
@@ -25,10 +24,9 @@ export type Type =
   | ImplementingType;
 */
 
-const createSimpleType = (name/*: string*/ = 'Unnamed Type')/*: SimpleType*/ => ({
+const createSimpleType = ()/*: SimpleType*/ => ({
   type: 'simple',
   id: generateUUID(),
-  name,
 });
 
 const createImplementingType = (implements/*: Array<TypeID>*/)/*: ImplementingType*/ => ({

@@ -1,5 +1,6 @@
 // @flow strict
 const generateUUID = require('uuid/v4');
+const { createProgram } = require('./program');
 /*::
 import type { TypeID, Type } from './type';
 import type { Instance, InstanceID } from './instance';
@@ -61,7 +62,7 @@ const createDeclareIfBranchStatement = (
   instanceIdToRefine/*: InstanceID*/,
   targetTypeId/*: TypeID*/,
   hitProgram/*: Program*/,
-  missProgram/*: Program*/,
+  missProgram/*: Program*/ = createProgram([]),
 )/*: DeclareIfBranchStatement*/ => ({
   id: generateUUID(),
   type: 'declare-if-branch',

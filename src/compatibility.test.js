@@ -2,7 +2,7 @@
 const { createSimpleType, createImplementingType, createBranchingType } = require('./type');
 const { areTypesCompatible } = require('./compatibility');
 const { performance } = require('perf_hooks');
-const { createState } = require('./state');
+const { createState } = require('./program');
 
 const testBranchingType = () => {
   const typeA = createSimpleType();
