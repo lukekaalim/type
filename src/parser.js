@@ -100,6 +100,7 @@ const parseExpression = (source/*: string*/, tokens/*: Set<Token>*/) => {
     comments.push([comment, getLine(lengthsAcc, start)])
   );
   const parsed = parse(source, { onComment });
+  console.log(parsed);
 
   const [firstProgram] = parsed.body.map(node => {
     const declarator = node.declarations[0];
