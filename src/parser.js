@@ -96,9 +96,9 @@ const parseExpression = (source/*: string*/, tokens/*: Set<Token>*/) => {
   const lengthsAcc = lengths.reduce((acc, curr, index) => [...acc, (acc[index - 1] || 0) + curr], []);
  
   const comments = [];
-  const onComment = (isBlock, comment, start, end) => (
+  const onComment = (isBlock, comment, start, end) => {
     comments.push([comment, getLine(lengthsAcc, start)])
-  );
+  };
   const parsed = parse(source, { onComment });
   console.log(parsed);
 
