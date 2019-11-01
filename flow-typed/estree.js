@@ -1,13 +1,13 @@
 // @flow strict
 
-export type EstreeIdentifier = {
+declare type EstreeIdentifier = {
   type: 'Identifier',
   start: number,
   end: number,
   name: string,
 };
 
-export type EstreeIfStatement = {
+declare type EstreeIfStatement = {
   type: 'IfStatement',
   start: number,
   end: number,
@@ -16,7 +16,7 @@ export type EstreeIfStatement = {
   alternate: null | EstreeBlockStatement,
 }
 
-export type EstreeLiteral = {
+declare type EstreeLiteral = {
   type: 'Literal',
   start: number,
   end: number,
@@ -24,21 +24,21 @@ export type EstreeLiteral = {
   raw: string,
 };
 
-export type EstreeReturnStatement = {
+declare type EstreeReturnStatement = {
   type: 'ReturnStatement',
   start: number,
   end: number,
   argument: EstreeLiteral,
 }
 
-export type EstreeBlockStatement = {
+declare type EstreeBlockStatement = {
   type: 'BlockStatement',
   start: number,
   end: number,
   body: (EstreeIfStatement | EstreeReturnStatement)[],
 };
 
-export type EstreeArrowFunctionExpression = {
+declare type EstreeArrowFunctionExpression = {
   type: 'ArrowFunctionExpression',
   start: number,
   end: number,
@@ -50,7 +50,7 @@ export type EstreeArrowFunctionExpression = {
   body: EstreeBlockStatement,
 }
 
-export type EstreeVariableDeclarator = {
+declare type EstreeVariableDeclarator = {
   type: 'VariableDeclarator',
   start: number,
   end: number,
@@ -58,7 +58,7 @@ export type EstreeVariableDeclarator = {
   init: EstreeArrowFunctionExpression,
 }
 
-export type EstreeVariableDeclaration = {
+declare type EstreeVariableDeclaration = {
   type: 'VariableDeclaration',
   start: number,
   end: number,
@@ -66,7 +66,7 @@ export type EstreeVariableDeclaration = {
   declarations: EstreeVariableDeclarator[],
 }
 
-export type EstreeProgram = {
+declare type EstreeProgram = {
   type: 'Program',
   start: number,
   end: number,

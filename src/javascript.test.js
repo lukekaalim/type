@@ -1,10 +1,11 @@
 // @flow strict
 const { assert } = require('@lukekaalim/test');
 const { getProgramFromSource } = require('./javascript/parser');
+const { assertFromUser } = require('./assertions.test');
 
-const testParser = () => {
+const testParser = async () => {
   const source = `
-  // boolean
+  //! (a: boolean)
   const main = (a) => {
     if (a) {
       return 1;
@@ -13,12 +14,12 @@ const testParser = () => {
   };
   `;
   getProgramFromSource(source);
-  return assert('Console Log', true);
+  return await assertFromUser('Does it look like the parser worked?');
 };
 
-const testJavascript = () => {
+const testJavascript = async () => {
   return assert('Parser should parse the sourcecode into an estree', [
-    testParser(),
+    await testParser(),
   ]);
 };
 

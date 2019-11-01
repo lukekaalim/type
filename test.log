@@ -1,0 +1,3 @@
+✓ @lukekaalim/type should provide a safe typing language
+  ✓ Parser should parse the sourcecode into an estree
+    ✓ Asked the User if this was correct (User said yes)
