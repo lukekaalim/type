@@ -1,28 +1,66 @@
 // @flow strict
+const generateUUID = require('uuid/v4');
 /*::
 import type { SourceLocation } from './source';
+import type { TokenID } from './token';
 */
+
 /*::
 export opaque type AnnotationID = string;
+export type Annotation =
+  | FunctionAnnotation
+  | TypeTokenAnnotation
+  | ValueTokenAnnotation
 
-export type Annotation = 
-  | FunctionAnnotationID
+export type TypeTokenAnnotation = {
+  id: AnnotationID,
+  type: 'type-token',
+  tokenId: TokenID,
+};
 
-export opaque type ExpressionAnnotationID = string;
+export type ValueTokenAnnotation = {
+  id: AnnotationID,
+  type: 'value-token',
+  tokenId: TokenID,
+};
 
-export opaque type FunctionAnnotationID = string;
 export type FunctionAnnotation = {
-  id: FunctionAnnotationID,
+  id: AnnotationID,
   loc: SourceLocation,
+  type: 'function',
 
-  parameters: ExpressionAnnotationID[],
-  returns: ExpressionAnnotationID,
-  throws: ExpressionAnnotationID,
+  parameters: AnnotationID[],
+  returns: null | AnnotationID,
+  throws: null | AnnotationID,
 };
 */
-const createFunctionAnnotation = (loc/*: SourceLocation*/, parameters/*: ExpressionAnnotationID[]*/) => ({
 
+const createTypeAnnotation = (
+  tokenId/*: TokenID*/,
+)/*: TypeTokenAnnotation*/ => ({
+  id: generateUUID(),
+  type: 'type-token',
+  tokenId,
+})
+
+const createFunctionAnnotation = (
+  loc/*: SourceLocation*/,
+  parameters/*: AnnotationID[]*/,
+  returns/*: null | AnnotationID*/ = null,
+  throws/*: null | AnnotationID*/ = null,
+)/*: FunctionAnnotation*/ => ({
+  id: generateUUID(),
+  type: 'function',
+  loc,
+  parameters,
+  returns,
+  throws,
 });
+
+module.exports = {
+  createFunctionAnnotation,
+  createTypeAnnotation,
+};
 
 /*!
 
