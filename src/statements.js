@@ -7,24 +7,15 @@ import type { Instance, InstanceID } from './instance';
 import type { TokenID } from './token';
 import type { Program } from './program';
 
-export opaque type StatementID: string = string;
+export opaque type StatementID = string;
 
-export type DeclareTypeStatement = {
-  id: StatementID,
-  type: 'declare-type',
-  declaredType: Type,
-};
 export type DeclareInstanceStatement = {
   id: StatementID,
   type: 'declare-instance',
   declaredInstance: Instance,
 };
-export type DeclareReturnStatement = {
-  id: StatementID,
-  type: 'declare-return',
-  declaredReturnInstanceID: InstanceID,
-};
-export type DeclareIfBranchStatement = {
+
+export type DeclareBranchStatement = {
   id: StatementID,
   type: 'declare-if-branch',
   targetTypeId: TypeID,
@@ -33,6 +24,17 @@ export type DeclareIfBranchStatement = {
   missProgram: Program,
 };
 
+// Special decorative statements
+export type DeclareOutputStatement = {
+  id: StatementID,
+  type: 'declare-ouput',
+  outputIds: InstanceID[],
+};
+export type DeclareInputStatement = {
+  id: StatementID,
+  type: 'declare-input',
+  inputIds: InstanceID[],
+};
 export type DeclareSubProgramStatement = {
   id: StatementID,
   type: 'declare-subprogram',
@@ -40,20 +42,16 @@ export type DeclareSubProgramStatement = {
 }
 
 export type Statement =
-  | DeclareTypeStatement
   | DeclareInstanceStatement
+  | DeclareOutputStatement
+  | DeclareInputStatement
+  | DeclareBranchStatement
   | DeclareReturnStatement
   | DeclareIfBranchStatement
   | DeclareSubProgramStatement
 */
 
-const createDeclareTypeStatement = (declaredType/*: Type*/)/*: DeclareTypeStatement*/ => ({
-  id: generateUUID(),
-  type: 'declare-type',
-  declaredType,
-});
-
-const createDeclareInstanceStatement = (declaredInstance/*: Instance*/)/*: DeclareInstanceStatement*/ => ({
+const declareInstance = (declaredInstance/*: Instance*/)/*: DeclareInstanceStatement*/ => ({
   id: generateUUID(),
   type: 'declare-instance',
   declaredInstance,

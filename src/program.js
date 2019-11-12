@@ -1,5 +1,5 @@
 // @flow strict
-const { Map, Record } = require('immutable');
+const { Map, Record, List } = require('immutable');
 const { generateVariantsFromType } = require('./refinement');
 const { areTypesCompatible } = require('./compatibility');
 const { UnimplementedError } = require('./errors');
@@ -11,26 +11,22 @@ import type { InstanceID, Instance } from './instance';
 import type { RecordOf, RecordFactory } from 'immutable';
 
 export type Program = {
-  statements: Array<Statement>,
+  statements: List<Statement>,
 };
 
-export type State = {
+export type ProgramState = {
   types: Map<TypeID, Type>,
-  instances: Map<InstanceID, Instance>,
-  returnedInstanceId: null | InstanceID;
+  values: Map<InstanceID, Instance>,
 };
 */
 
-const createState = ()/*: State*/ => ({
-  types: Map(),
-  instances: Map(),
-  returnedInstanceId: null,
+const createProgram/*: RecordFactory<Program>*/ = Record({
+  statements: List(),
 });
 
-const DEFAULT_STATE = createState();
-
-const createProgram = (statements/*: Array<Statement>*/) => ({
-  statements,
+const createProgramState/*: RecordFactory<ProgramState>*/ = Record({
+  types: Map(),
+  values: Map(),
 });
 
 const flatten = (acc, curr) => [...acc, ...curr];
