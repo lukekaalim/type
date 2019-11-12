@@ -54,6 +54,11 @@ const reduceState = (state/*: State*/, statement/*: Statement*/)/*: Array<State>
       return [{ ...state, types: state.types.set(statement.declaredType.id, statement.declaredType) }];
     case 'declare-return':
       return [{ ...state, returnedInstanceId: statement.declaredReturnInstanceID }];
+    case 'declare-subprogram': {
+      const subProgramStates = getProgramState(statement.subprogram, state);
+      console.log(subProgramStates);
+      return [{ ...state,  }];
+    }
     case 'declare-if-branch': {
       const instance = state.instances.get(statement.instanceIdToRefine);
       if (!instance)
@@ -73,7 +78,7 @@ const reduceState = (state/*: State*/, statement/*: Statement*/)/*: Array<State>
         }).reduce(flatten, []);
     }
     default:
-      throw new UnimplementedError('Reduce State');
+      throw new UnimplementedError(`Reduce State, case: ${statement.type}`);
   }
 };
 

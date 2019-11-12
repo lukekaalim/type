@@ -11,6 +11,12 @@ const assertFromUser = async (question/*: string*/) => {
   return assert(`Asked the User if this was correct (User said ${userResponse})`, userResponse === 'yes');
 };
 
+const assertToDo = (value/*: string*/) => {
+  console.log(value);
+  return assert('Use has not yet decided what a test for this value is', false);
+};
+
 module.exports = {
   assertFromUser,
+  assertToDo,
 };

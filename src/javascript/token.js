@@ -51,6 +51,10 @@ const createInstanceToken = (
   sourceLocation,
 });
 
+const findIdentifier = () => {
+
+};
+
 module.exports = {
   createTypeToken,
   createInstanceToken,

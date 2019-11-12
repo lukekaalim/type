@@ -28,15 +28,20 @@ declare type EstreeReturnStatement = {
   type: 'ReturnStatement',
   start: number,
   end: number,
-  argument: EstreeLiteral,
+  argument: EstreeIdentifier | EstreeLiteral,
 }
 
 declare type EstreeBlockStatement = {
   type: 'BlockStatement',
   start: number,
   end: number,
-  body: (EstreeIfStatement | EstreeReturnStatement)[],
+  body: EstreeBodyElements[],
 };
+
+declare type EstreeBodyElements =
+  | EstreeIfStatement
+  | EstreeReturnStatement
+  | EstreeVariableDeclaration;
 
 declare type EstreeArrowFunctionExpression = {
   type: 'ArrowFunctionExpression',
@@ -71,5 +76,5 @@ declare type EstreeProgram = {
   start: number,
   end: number,
   sourceType: 'script',
-  body: EstreeVariableDeclaration[],
+  body: EstreeBodyElements[],
 };

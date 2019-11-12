@@ -33,11 +33,18 @@ export type DeclareIfBranchStatement = {
   missProgram: Program,
 };
 
+export type DeclareSubProgramStatement = {
+  id: StatementID,
+  type: 'declare-subprogram',
+  subprogram: Program,
+}
+
 export type Statement =
   | DeclareTypeStatement
   | DeclareInstanceStatement
   | DeclareReturnStatement
   | DeclareIfBranchStatement
+  | DeclareSubProgramStatement
 */
 
 const createDeclareTypeStatement = (declaredType/*: Type*/)/*: DeclareTypeStatement*/ => ({
@@ -72,9 +79,18 @@ const createDeclareIfBranchStatement = (
   missProgram,
 });
 
+const createDeclareSubProgram = (
+  subprogram/*: Program*/,
+)/*: DeclareSubProgramStatement */ => ({
+  id: generateUUID(),
+  subprogram,
+  type: 'declare-subprogram'
+});
+
 module.exports = {
   createDeclareInstanceStatement,
   createDeclareTypeStatement,
   createDeclareReturnStatement,
   createDeclareIfBranchStatement,
+  createDeclareSubProgram,
 };
