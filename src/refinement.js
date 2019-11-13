@@ -6,7 +6,6 @@ import type { Type, TypeID, ImplementingType } from './type';
 import type { Token } from './token';
 
 import type { Map } from 'immutable';
-import type { State } from './program';
 */
 
 // SHould create new types and add them to the state

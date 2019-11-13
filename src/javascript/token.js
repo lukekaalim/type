@@ -13,14 +13,12 @@ export type TypeToken = {
   id: TokenID,
   typeId: TypeID,
   identifier: Identifier,
-  sourceLocation: SourceLocation,
 };
 export type ValueToken = {
   type: 'value-token',
   id: TokenID,
   valueId: InstanceID,
   identifier: Identifier,
-  sourceLocation: SourceLocation,
 };
 
 export type Token = 
@@ -31,24 +29,20 @@ export type Token =
 const createTypeToken = (
   identifier/*: string*/,
   typeId/*: TypeID*/,
-  sourceLocation/*: SourceLocation*/
 )/*: TypeToken*/ => ({
   id: generateUUID(),
   identifier,
   typeId,
   type: 'type-token',
-  sourceLocation,
 });
 const createInstanceToken = (
   identifier/*: string*/,
   valueId/*: InstanceID*/,
-  sourceLocation/*: SourceLocation*/
 )/*: ValueToken*/ => ({
   id: generateUUID(),
   identifier,
   valueId,
   type: 'value-token',
-  sourceLocation,
 });
 
 const findIdentifier = () => {

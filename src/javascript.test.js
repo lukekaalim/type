@@ -1,12 +1,12 @@
 // @flow strict
 const { assert } = require('@lukekaalim/test');
-const { getProgramFromSource, createJsParserState } = require('./javascript/parser');
+const { getProgramFromSource, createLumberState } = require('./javascript/parser');
 const { assertToDo } = require('./assertions.test');
 const { createFunctionAnnotation, createTypeAnnotation } = require('./javascript/annotation');
 const { createSimpleType } = require('./type');
 const { createSourceLocation } = require('./javascript/source');
 const { createTypeToken } = require('./javascript/token');
-const { getProgramState, createState } = require('./program');
+const { createProgram, runProgram, createProgramState } = require('./program');
 const { Map } = require('immutable');
 
 const testParser = async () => {
@@ -17,37 +17,62 @@ const testParser = async () => {
   };
   `;
   const alphaType = createSimpleType();
-  const alphaToken = createTypeToken('Alpha', alphaType.id, createSourceLocation(10, 15))
+  const alphaToken = createTypeToken('Alpha', alphaType.id)
 
   const parameterAnnotation = createTypeAnnotation(alphaToken.id);
   const mainAnnotation = createFunctionAnnotation(createSourceLocation(0, 16), [parameterAnnotation.id]);
 
   const numberType = createSimpleType();
-  const numberToken = createTypeToken('number', numberType.id, createSourceLocation(0, 0));
+  const numberToken = createTypeToken('number', numberType.id);
 
+  const undefinedType = createSimpleType();
+  const undefinedToken = createTypeToken('undefined', undefinedType.id);
 
-  const initialState = createJsParserState({
+  const initalLumberState = createLumberState({
     annotations: Map([
       [parameterAnnotation.id, parameterAnnotation],
       [mainAnnotation.id, mainAnnotation],
     ]),
     typeTokens: Map([
       [alphaToken.identifier, alphaToken],
-      [numberToken.identifier, numberToken]
+      [numberToken.identifier, numberToken],
+      [undefinedToken.identifier, undefinedToken]
     ]),
   });
-  const initialState2 = {
-    ...createState(),
+  const initalSawmillState = createProgramState({
     types: Map([
       [alphaType.id, alphaType],
       [numberType.id, numberType],
+      [undefinedType.id, undefinedType],
     ]),
+  });
+
+  const finalLumberState = getProgramFromSource(source, initalLumberState);
+  const finalSawmillStates = runProgram(createProgram({ statements: finalLumberState.statements }), finalLumberState.initalSawmillState);
+
+  const mainToken = finalLumberState.valueTokens.get('main');
+  console.log('token(main) ===', mainToken);
+  if (!mainToken)
+    throw new Error();
+  for (const finalSawmillState of finalSawmillStates) {
+    const mainValue = finalSawmillState.values.get(mainToken.valueId);
+    console.log('value(main) ===', mainValue);
+    if (!mainValue)
+      throw new Error();
+    const mainConstraint = finalSawmillState.constraints.findLast(constraint => constraint.value === mainValue.id);
+    console.log('constraint(main) ===', mainConstraint);
+    if (!mainConstraint)
+      throw new Error();
+    const mainType = finalSawmillState.types.get(mainConstraint.typeConstraint);
+    console.log('type(main) ===', mainType)
+    if (!mainType)
+      throw new Error();
+    // Here we assume that main is a function, and thus has a sig
+    const sigs = finalLumberState.functionSignatures.filter(sig => sig.typeId === mainType.id);
+    console.log('sigs(main) ===', sigs.toJS())
   }
-  const state = getProgramFromSource(source, initialState);
-  return assert('Should get a good AST and parse it for errors', [
-    assertToDo(JSON.stringify(state.get('program'), null, 2)),
-    assertToDo(JSON.stringify(getProgramState(state.get('program'), initialState2), null, 2))
-  ]);
+
+  return assert('Should get a good AST and parse it for errors', false);
 };
 
 const testJavascript = async () => {

@@ -6,14 +6,24 @@ import type { TypeID, Type } from './type';
 import type { Instance, InstanceID } from './instance';
 import type { TokenID } from './token';
 import type { Program } from './program';
+import type { Constraint } from './constraint';
 
 export opaque type StatementID = string;
-
-export type DeclareInstanceStatement = {
+export type CreateValueStatement = {
   id: StatementID,
-  type: 'declare-instance',
-  declaredInstance: Instance,
+  type: 'create-value',
+  value: Instance,
 };
+export type ExitStatement = {
+  id: StatementID,
+  type: 'exit'
+};
+
+export type ConstrainStatement = {
+  id: StatementID,
+  type: 'constrain',
+  constraint: Constraint,
+}
 
 export type DeclareBranchStatement = {
   id: StatementID,
@@ -24,71 +34,31 @@ export type DeclareBranchStatement = {
   missProgram: Program,
 };
 
-// Special decorative statements
-export type DeclareOutputStatement = {
-  id: StatementID,
-  type: 'declare-ouput',
-  outputIds: InstanceID[],
-};
-export type DeclareInputStatement = {
-  id: StatementID,
-  type: 'declare-input',
-  inputIds: InstanceID[],
-};
-export type DeclareSubProgramStatement = {
-  id: StatementID,
-  type: 'declare-subprogram',
-  subprogram: Program,
-}
-
 export type Statement =
-  | DeclareInstanceStatement
-  | DeclareOutputStatement
-  | DeclareInputStatement
-  | DeclareBranchStatement
-  | DeclareReturnStatement
-  | DeclareIfBranchStatement
-  | DeclareSubProgramStatement
+  | ExitStatement
+  | CreateValueStatement
+  | ConstrainStatement
 */
 
-const declareInstance = (declaredInstance/*: Instance*/)/*: DeclareInstanceStatement*/ => ({
+const createValue = (value/*: Instance*/)/*: CreateValueStatement*/ => ({
   id: generateUUID(),
-  type: 'declare-instance',
-  declaredInstance,
+  type: 'create-value',
+  value,
 });
 
-const createDeclareReturnStatement = (declaredReturnInstanceID/*: InstanceID*/)/*: DeclareReturnStatement*/ => ({
+const exit = ()/*: ExitStatement*/ => ({
   id: generateUUID(),
-  type: 'declare-return',
-  declaredReturnInstanceID,
+  type: 'exit',
 });
 
-const createDeclareIfBranchStatement = (
-  instanceIdToRefine/*: InstanceID*/,
-  targetTypeId/*: TypeID*/,
-  hitProgram/*: Program*/,
-  missProgram/*: Program*/ = createProgram([]),
-)/*: DeclareIfBranchStatement*/ => ({
+const constrain = (constraint/*: Constraint*/)/*: ConstrainStatement*/ => ({
   id: generateUUID(),
-  type: 'declare-if-branch',
-  instanceIdToRefine,
-  targetTypeId,
-  hitProgram,
-  missProgram,
-});
-
-const createDeclareSubProgram = (
-  subprogram/*: Program*/,
-)/*: DeclareSubProgramStatement */ => ({
-  id: generateUUID(),
-  subprogram,
-  type: 'declare-subprogram'
+  type: 'constrain',
+  constraint,
 });
 
 module.exports = {
-  createDeclareInstanceStatement,
-  createDeclareTypeStatement,
-  createDeclareReturnStatement,
-  createDeclareIfBranchStatement,
-  createDeclareSubProgram,
+  createValue,
+  constrain,
+  exit,
 };

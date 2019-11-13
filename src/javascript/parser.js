@@ -1,49 +1,82 @@
 // @flow strict
 /*::
 import type { Identifier, ValueToken, TypeToken } from './token';
-import type { Program } from '../program';
+import type { TypeID } from '../type';
+import type { Program, ProgramState } from '../program';
 import type { AnnotationID, Annotation } from './annotation';
 import type { InstanceID, Instance } from '../instance';
 import type { RecordFactory, RecordOf } from 'immutable';
+import type { Statement } from '../statements';
+import type { FunctionSignature } from './signature';
 */
-
-const { createSourceLocation } = require('./source');
-const { Record, Map } = require('immutable');
+const { Record, Map, List } = require('immutable');
 const { parse } = require("acorn");
+
+const { createFunctionSignatures } = require('./signature');
+const { createSourceLocation } = require('./source');
 const { createInstanceToken } = require('./token');
 const { createInstance } = require('../instance');
 const { createSimpleType } = require('../type');
-const { createProgram } = require('../program');
-const { createDeclareSubProgram, createDeclareReturnStatement, createDeclareInstanceStatement } = require('../statements');
+const { createProgram, runProgram, createProgramState } = require('../program');
+const { exit, createValue, constrain } = require('../statements');
+const { createConstraint } = require('../constraint');
 
 /*:: 
-type JSParserState = {
+export type LumberState = {
+  // Meta type information
   annotations: Map<AnnotationID, Annotation>,
+  // Javascript state tracking
   valueTokens: Map<string, ValueToken>,
   typeTokens: Map<string, TypeToken>,
-  program: Program,
-  returnedProgram: boolean,
+  functionSignatures: List<FunctionSignature>,
+  initalSawmillState: RecordOf<ProgramState>,
+  // sawmill program generation
+  statements: List<Statement>,
+  // signiture generation
+  returnValue: null | InstanceID,
+  throwValue: null | InstanceID,
+  argumentValues: List<InstanceID>,
 };
 */
-const createJsParserState/*: RecordFactory<JSParserState>*/ = Record({
+const createLumberState/*: RecordFactory<LumberState>*/ = Record({
   annotations: Map(),
+
   valueTokens: Map(),
   typeTokens: Map(),
-  program: createProgram([]),
-  returnedProgram: false,
+  functionSignatures: List(),
+  initalSawmillState: createProgramState(),
+
+  statements: List(),
+
+  returnValue: null,
+  throwValue: null,
+  argumentValues: List(),
 }, 'JSParserState');
 
 const functionDeclarator = (state, declarator, initFunction) => {
-  const instance = createInstance(createSimpleType().id);
-  const token = createInstanceToken(declarator.id.name, instance.id, createSourceLocation(declarator.start, declarator.end));
-  const functionFinalState = bodyElement(initFunction.body.body, state.set('program', createProgram([])));
+  // Every function is unique
+  const type = createSimpleType();
+  const instance = createInstance(type.id);
+  const token = createInstanceToken(declarator.id.name, instance.id);
 
-  const functionProgram = functionFinalState.get('program');
+  // should get arguments here, and feed them to the function state
+  // as well as reseting the return & throw states
+
+  const lumberState = statement(initFunction.body.body, state);
+
+  const program = createProgram({ statements: lumberState.statements });
+  const sawmillState = runProgram(program, createProgramState());
+
+  const signatures = createFunctionSignatures(type.id, lumberState, sawmillState);
+
   return state
+    .update('statements', statements => statements
+      .push(createValue(instance))
+      .push(constrain(createConstraint(instance.id, type.id)))
+    )
+    .update('initalSawmillState', sawmill => sawmill.update('types', sawmillTypes => sawmillTypes.set(type.id, type)))
+    .update('functionSignatures', allSignatures => allSignatures.merge(signatures))
     .update('valueTokens', valueTokens => valueTokens.set(token.identifier, token))
-    .update('program', program => createProgram([...program.statements, createDeclareSubProgram(
-      functionProgram,
-    )]))
 };
 
 const variableDeclarator = (state, declarator) => {
@@ -61,51 +94,58 @@ const variableDeclaration = (state, variableNode) => {
   }, state);
 };
 
-const returnDeclaration = (state, returnNode) => {
-  if (returnNode.argument.type === 'Identifier') {
-    throw new Error('Unexpected Identifier in return statement; We don\'t support this yet!')
+const literalDeclaration = (state, literalNode) => {
+  const literalTypeIdentifier = typeof literalNode.value;
+  const literalType = state.get('typeTokens').get(literalTypeIdentifier);
+  if (!literalType) {
+    throw new Error(`There's no known type for the type identifier: "${literalTypeIdentifier}"`)
   }
-  const returnNodeTypeTokenIdentifier = typeof returnNode.argument.value;
-  const type = state.get('typeTokens').get(returnNodeTypeTokenIdentifier);
-  if (!type) {
-    throw new Error(`There's no known type for the type identifier: "${returnNodeTypeTokenIdentifier}"`)
-  }
-  const returnInstance = createInstance(createSimpleType().id);
-  return state
-    .update('program', program => createProgram([
-      ...program.statements,
-      createDeclareInstanceStatement(returnInstance),
-      createDeclareReturnStatement(returnInstance.id)
-    ]))
-    .set('returnedProgram', true);
+  const literalInstance = createInstance(literalType.typeId);
+  return literalInstance;
 };
 
-const bodyElement = (body, initialState)/*: RecordOf<JSParserState>*/ => {
-  return body.reduce((state, bodyNode) => {
-    if (state.get('returnedProgram')) {
-      return state;
-    }
-    switch (bodyNode.type) {
-      case 'VariableDeclaration':
-        return variableDeclaration(state, bodyNode);
-      case 'ReturnStatement':
-        return returnDeclaration(state, bodyNode);
-    }
+const returnDeclaration = (state, returnNode) => {
+  if (returnNode.argument.type !== 'Literal') {
+    console.warn('Unexpected Syntax in return statement; We don\'t support this yet!');
     return state;
+  }
+
+  const returnValue = literalDeclaration(state, returnNode.argument);
+
+  return state
+    .update('statements', statements => statements
+      .push(createValue(returnValue))
+      .push(constrain(createConstraint(returnValue.id, returnValue.typeId)))
+      .push(exit())
+    )
+    .set('returnValue', returnValue.id)
+};
+
+const statement = (body, initialState)/*: RecordOf<LumberState>*/ => {
+  return body.reduce((state, node) => {
+    switch (node.type) {
+      case 'VariableDeclaration':
+        return variableDeclaration(state, node);
+      case 'ReturnStatement':
+        return returnDeclaration(state, node);
+      default:
+        console.warn(`Skipping statement type: "${node.type}"; We don\'t support this yet!`)
+        return state;
+    }
   }, initialState);
 };
 
 const getProgramFromSource = (
   source/*: string*/,
-  initialState/*: RecordOf<JSParserState>*/ = createJsParserState()
+  initialState/*: RecordOf<LumberState>*/ = createLumberState()
 ) => {
   const estree = parse(source);
   //console.log(JSON.stringify(estree, null, 2));
   //console.log(JSON.stringify(program(estree, initialState), null, 2));
-  return bodyElement(estree.body, initialState);
+  return statement(estree.body, initialState);
 };
 
 module.exports = {
-  createJsParserState,
+  createLumberState,
   getProgramFromSource,
 };

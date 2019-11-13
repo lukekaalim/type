@@ -7,16 +7,22 @@ const { UnimplementedError } = require('./errors');
 import type { Statement } from './statements';
 import type { TypeID, Type } from './type';
 import type { TokenID, Token } from './token';
+import type { Constraint } from './constraint';
 import type { InstanceID, Instance } from './instance';
+
 import type { RecordOf, RecordFactory } from 'immutable';
 
+export opaque type ProgramID = string;
 export type Program = {
+  id: ProgramID,
   statements: List<Statement>,
 };
 
 export type ProgramState = {
   types: Map<TypeID, Type>,
   values: Map<InstanceID, Instance>,
+  constraints: List<Constraint>,
+  exited: boolean,
 };
 */
 
@@ -27,23 +33,42 @@ const createProgram/*: RecordFactory<Program>*/ = Record({
 const createProgramState/*: RecordFactory<ProgramState>*/ = Record({
   types: Map(),
   values: Map(),
+  constraints: List(),
+  exited: false,
 });
 
 const flatten = (acc, curr) => [...acc, ...curr];
 
-const getProgramState = (program/*: Program*/, initialState/*: State*/ = DEFAULT_STATE)/*: State[]*/ => {
-  return program.statements.reduce((states, statement) =>
-    // for each state the program currently has, calculate it, and add it back (plus any other variants that it generated) back to the list of states
-    states.map(state => reduceState(state, statement)).reduce(flatten, []),
-    [initialState]
+const runProgram = (
+  program/*: RecordOf<Program>*/,
+  initialState/*: RecordOf<ProgramState>*/ = createProgramState(),
+) => {
+  return program.statements.reduce/*:: <List<RecordOf<ProgramState>>>*/((states, statement) =>
+    states
+      .map(state => reduceState(state, statement))
+      .flatten(true),
+    List([initialState])
   );
 };
 
-const reduceState = (state/*: State*/, statement/*: Statement*/)/*: Array<State>*/ => {
-  if (state.returnedInstanceId !== null) {
-    return [state];
+const reduceState = (state, statement) => {
+  if (state.exited) {
+    return List([state]);
   }
   switch (statement.type) {
+    case 'create-value':
+      return List([
+        state.update('values', values => values.set(statement.value.id, statement.value)),
+      ]);
+    case 'exit':
+      return List([
+        state.set('exited', true),
+      ]);
+    case 'constrain':
+      return List([
+        state.update('constraints', constraints => constraints.push(statement.constraint)),
+      ]);
+    /*
     case 'declare-instance':
       return [{ ...state, instances: state.instances.set(statement.declaredInstance.id, statement.declaredInstance) }];
     case 'declare-type':
@@ -73,14 +98,14 @@ const reduceState = (state/*: State*/, statement/*: Statement*/)/*: Array<State>
           }
         }).reduce(flatten, []);
     }
+    */
     default:
       throw new UnimplementedError(`Reduce State, case: ${statement.type}`);
   }
 };
 
 module.exports = {
-  reduceState,
-  createState,
   createProgram,
-  getProgramState,
+  createProgramState,
+  runProgram,
 };
