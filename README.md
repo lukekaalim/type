@@ -25,3 +25,30 @@ We define a set of operations that out type system cares about:
 So yeah. That's all JS does from the perspective of this program; assigns primitives and executes functions.
 
 We constrain our problem space so it can be easily solvable, but more importantly, solvable _fast_.
+
+### Lumber
+Lumber is the tree-parser that transforms ESTree AST's into Sawmill-consumable statements. Lumber needs to keep track of all Javascript-related logic, creating and defining types for objects on-the-fly, transforming functions into Sawmill programs to learn their signatures and all other good stuff.
+
+### Sawmill
+Sawmill is the underlying engine that resolves type constrains. It is quite simple, only supporting a couple of operations. It operates on one statement at a time, validating whether that statement possible (detecting unsound code) and resolving and testing type constraints (autocomplete). It requires a starting state, and cannot parse normal javascript (at least, not without lumber).
+
+It can:
+  1. Keep track of values (which are instances of types)
+  2. Perform assertions of values to see if they are compatible with other types
+  3. Branch execution state on variant types to explore the full possibilities of every potential execution path
+
+Sawmill returns an array of States, eagerly splitting the universe each time it observes a variant.
+
+### Subroutines
+A subroutine, subprogram, or **function**, is one of the most important building blocks of a program. The majority of operations
+are some kind of subroutine invocation...
+
+A subroutine has three parts in sawmill:
+
+```
+type assertion(...arguments);
+polymorphic type generation(typeof ...arguments)
+return instance generation
+```
+
+A returned instance
