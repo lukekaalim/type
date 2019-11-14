@@ -18,6 +18,22 @@ into two discrete sub-problems:
 
 A close-enough model should avoid executing side effects, trying to determine specifics with speculative execution, or performing any actual work.
 
+### Type System
+A simplified type system for handling non-complex types
+
+#### Type
+A type is the basic unit. There are three different variants of a type.
+  1. Simple Type
+  2. Union Type
+  3. Intersection Type
+
+A simple type has no properties.
+A union type is a type that _might_ be one of many types.
+An intersection type is a type that is all of a set of types.
+
+#### Value
+A value is an instance of a type. That is, every value has a type associated with it.
+
 ### Practical Solutions
 
 We approach the first problem by running `acorn()` through our source code, producing an *estree* data structure. We then run that data structure through our 'javascript parser', which should emit a set of simple operations that we've defined.
