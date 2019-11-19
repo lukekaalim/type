@@ -8,6 +8,7 @@ import type { InstanceID, Instance } from '../instance';
 import type { RecordFactory, RecordOf } from 'immutable';
 import type { Statement } from '../statements';
 import type { FunctionSignature } from './signature';
+import type { JSValue, JSValueID } from './values';
 */
 const { Record, Map, List } = require('immutable');
 const { parse } = require("acorn");
@@ -20,6 +21,7 @@ const { createSimpleType } = require('../type');
 const { createProgram, runProgram, createProgramState } = require('../program');
 const { exit, createValue, constrain } = require('../statements');
 const { createConstraint } = require('../constraint');
+const { createLiteralNumber } = require('./values');
 
 /*:: 
 export type LumberState = {
@@ -32,6 +34,7 @@ export type LumberState = {
   initalSawmillState: RecordOf<ProgramState>,
   // sawmill program generation
   statements: List<Statement>,
+  jsValues: Map<JSValueID, JSValue>,
   // signiture generation
   returnValue: null | InstanceID,
   throwValue: null | InstanceID,
@@ -47,6 +50,7 @@ const createLumberState/*: RecordFactory<LumberState>*/ = Record({
   initalSawmillState: createProgramState(),
 
   statements: List(),
+  values: Map(),
 
   returnValue: null,
   throwValue: null,
@@ -93,6 +97,12 @@ const variableDeclaration = (state, variableNode) => {
     return variableDeclarator(state, declaratorNode);
   }, state);
 };
+
+const createLiteral = (state, literalDeclaration) => {
+  const 
+
+  return []
+}
 
 const literalDeclaration = (state, literalNode) => {
   const literalTypeIdentifier = typeof literalNode.value;

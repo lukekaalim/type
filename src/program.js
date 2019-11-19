@@ -80,6 +80,7 @@ const reduceState = (state, statement) => {
       console.log(subProgramStates);
       return [{ ...state,  }];
     }
+    /*
     case 'declare-if-branch': {
       const instance = state.instances.get(statement.instanceIdToRefine);
       if (!instance)
