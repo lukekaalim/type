@@ -34,7 +34,7 @@ export type LumberState = {
   initalSawmillState: RecordOf<ProgramState>,
   // sawmill program generation
   statements: List<Statement>,
-  jsValues: Map<JSValueID, JSValue>,
+  values: Map<JSValueID, JSValue>,
   // signiture generation
   returnValue: null | InstanceID,
   throwValue: null | InstanceID,
@@ -98,20 +98,17 @@ const variableDeclaration = (state, variableNode) => {
   }, state);
 };
 
-const createLiteral = (state, literalDeclaration) => {
-  const 
+const getLiteralValue = (state, literalDeclaration) => {
+  const literalValue = literalDeclaration.value;
 
-  return []
-}
-
-const literalDeclaration = (state, literalNode) => {
-  const literalTypeIdentifier = typeof literalNode.value;
-  const literalType = state.get('typeTokens').get(literalTypeIdentifier);
-  if (!literalType) {
-    throw new Error(`There's no known type for the type identifier: "${literalTypeIdentifier}"`)
+  if (typeof literalValue !== 'number') {
+    throw new Error(`There's no known type for the type identifier: "${typeof literalDeclaration.value}"`)
   }
-  const literalInstance = createInstance(literalType.typeId);
-  return literalInstance;
+
+  const isLiteralNumber = value => value.type === 'literal-number' && value.value === literalValue;
+  const existingLiteralNumber = state.values.find(isLiteralNumber, null, null);
+
+  return existingLiteralNumber !== null ? existingLiteralNumber : createLiteralNumber(literalValue);
 };
 
 const returnDeclaration = (state, returnNode) => {
@@ -120,15 +117,19 @@ const returnDeclaration = (state, returnNode) => {
     return state;
   }
 
-  const returnValue = literalDeclaration(state, returnNode.argument);
+  const returnValue = getLiteralValue(state, returnNode.argument);
+
+  const returnSawmillValue = createInstance(returnValue.type.id);
 
   return state
+    .update('values', values => values.set(returnValue.id, returnValue))
+    .update('initalSawmillState', sawmillState => sawmillState.update('types', types => types.set(returnValue.type.id ,returnValue.type)))
     .update('statements', statements => statements
-      .push(createValue(returnValue))
-      .push(constrain(createConstraint(returnValue.id, returnValue.typeId)))
+      .push(createValue(returnSawmillValue))
+      .push(constrain(createConstraint(returnSawmillValue.id, returnSawmillValue.typeId)))
       .push(exit())
     )
-    .set('returnValue', returnValue.id)
+    .set('returnValue', returnSawmillValue.id)
 };
 
 const statement = (body, initialState)/*: RecordOf<LumberState>*/ => {
