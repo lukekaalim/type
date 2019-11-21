@@ -9,6 +9,7 @@ import type { TypeID, Type } from './type';
 import type { TokenID, Token } from './token';
 import type { Constraint } from './constraint';
 import type { InstanceID, Instance } from './instance';
+import type { Relationship, RelationshipID } from './relationship';
 
 import type { RecordOf, RecordFactory } from 'immutable';
 
@@ -22,6 +23,7 @@ export type ProgramState = {
   types: Map<TypeID, Type>,
   values: Map<InstanceID, Instance>,
   constraints: List<Constraint>,
+  relationships: List<Relationship>,
   exited: boolean,
 };
 */
@@ -34,6 +36,7 @@ const createProgramState/*: RecordFactory<ProgramState>*/ = Record({
   types: Map(),
   values: Map(),
   constraints: List(),
+  relationships: List(),
   exited: false,
 });
 

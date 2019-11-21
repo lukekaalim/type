@@ -6,10 +6,14 @@ import type { TypeID } from './type';
 import type { InstanceID } from './instance';
 
 export opaque type ConstraintID = string;
+// A constraint is the opposite of a 'polymorphic variant'.
+// it indicates 
 export type Constraint = {
   id: ConstraintID,
   value: InstanceID,
-  typeConstraint: TypeID,
+
+  variantRelationshipType: TypeID,
+  constraintType: TypeID,
 };
 */
 

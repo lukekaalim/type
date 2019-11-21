@@ -31,11 +31,11 @@ export type LumberState = {
   valueTokens: Map<string, ValueToken>,
   typeTokens: Map<string, TypeToken>,
   functionSignatures: List<FunctionSignature>,
-  initalSawmillState: RecordOf<ProgramState>,
+  initialSawmillState: RecordOf<ProgramState>,
   // sawmill program generation
   statements: List<Statement>,
-  values: Map<JSValueID, JSValue>,
-  // signiture generation
+  staticValues: Map<JSValueID, JSValue>,
+  // signature generation
   returnValue: null | InstanceID,
   throwValue: null | InstanceID,
   argumentValues: List<InstanceID>,
@@ -47,10 +47,10 @@ const createLumberState/*: RecordFactory<LumberState>*/ = Record({
   valueTokens: Map(),
   typeTokens: Map(),
   functionSignatures: List(),
-  initalSawmillState: createProgramState(),
+  initialSawmillState: createProgramState(),
 
   statements: List(),
-  values: Map(),
+  staticValues: Map(),
 
   returnValue: null,
   throwValue: null,
@@ -64,21 +64,24 @@ const functionDeclarator = (state, declarator, initFunction) => {
   const token = createInstanceToken(declarator.id.name, instance.id);
 
   // should get arguments here, and feed them to the function state
-  // as well as reseting the return & throw states
+  // as well as resetting the return & throw states
 
-  const lumberState = statement(initFunction.body.body, state);
+  const lumberState = createStaticRelationships(statement(initFunction.body.body, state));
 
   const program = createProgram({ statements: lumberState.statements });
-  const sawmillState = runProgram(program, createProgramState());
+  const sawmillState = runProgram(program, lumberState.initialSawmillState);
 
   const signatures = createFunctionSignatures(type.id, lumberState, sawmillState);
 
   return state
+    .update('staticValues', staticValues => staticValues.merge(lumberState.staticValues))
     .update('statements', statements => statements
       .push(createValue(instance))
       .push(constrain(createConstraint(instance.id, type.id)))
     )
-    .update('initalSawmillState', sawmill => sawmill.update('types', sawmillTypes => sawmillTypes.set(type.id, type)))
+    .update('initialSawmillState', sawmill => sawmill
+      .update('types', sawmillTypes => sawmillTypes.set(type.id, type))
+    )
     .update('functionSignatures', allSignatures => allSignatures.merge(signatures))
     .update('valueTokens', valueTokens => valueTokens.set(token.identifier, token))
 };
@@ -106,7 +109,7 @@ const getLiteralValue = (state, literalDeclaration) => {
   }
 
   const isLiteralNumber = value => value.type === 'literal-number' && value.value === literalValue;
-  const existingLiteralNumber = state.values.find(isLiteralNumber, null, null);
+  const existingLiteralNumber = state.staticValues.find(isLiteralNumber, null, null);
 
   return existingLiteralNumber !== null ? existingLiteralNumber : createLiteralNumber(literalValue);
 };
@@ -119,11 +122,10 @@ const returnDeclaration = (state, returnNode) => {
 
   const returnValue = getLiteralValue(state, returnNode.argument);
 
-  const returnSawmillValue = createInstance(returnValue.type.id);
+  const returnSawmillValue = createInstance(returnValue.valueType.id);
 
   return state
-    .update('values', values => values.set(returnValue.id, returnValue))
-    .update('initalSawmillState', sawmillState => sawmillState.update('types', types => types.set(returnValue.type.id ,returnValue.type)))
+    .update('staticValues', values => values.set(returnValue.id, returnValue))
     .update('statements', statements => statements
       .push(createValue(returnSawmillValue))
       .push(constrain(createConstraint(returnSawmillValue.id, returnSawmillValue.typeId)))
@@ -135,6 +137,9 @@ const returnDeclaration = (state, returnNode) => {
 const statement = (body, initialState)/*: RecordOf<LumberState>*/ => {
   return body.reduce((state, node) => {
     switch (node.type) {
+      case 'IfStatement':
+        console.log(node)
+        return state;
       case 'VariableDeclaration':
         return variableDeclaration(state, node);
       case 'ReturnStatement':
@@ -146,14 +151,30 @@ const statement = (body, initialState)/*: RecordOf<LumberState>*/ => {
   }, initialState);
 };
 
+const createNumericRelationship = (state, literalNumberValue) => {
+  return state
+    .update('initialSawmillState', sawmillState => sawmillState
+      .update('types', types => types.set(literalNumberValue.valueType.id, literalNumberValue.valueType))
+    )
+};
+
+const createStaticRelationships = (state) => {
+  return state.staticValues.reduce((state, value) => {
+    switch (value.type) {
+      case 'literal-number':
+        return createNumericRelationship(state, value);
+      default:
+        return state;
+    }
+  }, state);
+};
+
 const getProgramFromSource = (
   source/*: string*/,
   initialState/*: RecordOf<LumberState>*/ = createLumberState()
 ) => {
   const estree = parse(source);
-  //console.log(JSON.stringify(estree, null, 2));
-  //console.log(JSON.stringify(program(estree, initialState), null, 2));
-  return statement(estree.body, initialState);
+  return createStaticRelationships(statement(estree.body, initialState));
 };
 
 module.exports = {

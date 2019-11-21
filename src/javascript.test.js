@@ -19,7 +19,7 @@ const deepConsole = new Console({
 
 const testParser = async () => {
   const source = `
-  // (Alpha)
+  // (number)
   const main = (a) => {
     return 10;
   };
@@ -36,7 +36,7 @@ const testParser = async () => {
   const undefinedType = createSimpleType();
   const undefinedToken = createTypeToken('undefined', undefinedType.id);
 
-  const initalLumberState = createLumberState({
+  const initialLumberState = createLumberState({
     annotations: Map([
       [parameterAnnotation.id, parameterAnnotation],
       [mainAnnotation.id, mainAnnotation],
@@ -46,19 +46,20 @@ const testParser = async () => {
       [numberToken.identifier, numberToken],
       [undefinedToken.identifier, undefinedToken]
     ]),
-  });
-  const initalSawmillState = createProgramState({
-    types: Map([
-      [alphaType.id, alphaType],
-      [numberType.id, numberType],
-      [undefinedType.id, undefinedType],
-    ]),
+    initialSawmillState: createProgramState({
+      types: Map([
+        [alphaType.id, alphaType],
+        [numberType.id, numberType],
+        [undefinedType.id, undefinedType],
+      ]),
+    })
   });
 
-  const finalLumberState = getProgramFromSource(source, initalLumberState);
-  const finalSawmillStates = runProgram(createProgram({ statements: finalLumberState.statements }), finalLumberState.initalSawmillState);
+  const finalLumberState = getProgramFromSource(source, initialLumberState);
+  const finalSawmillStates = runProgram(createProgram({ statements: finalLumberState.statements }), finalLumberState.initialSawmillState);
 
   const mainToken = finalLumberState.valueTokens.get('main');
+  console.log('source === ', source);
   console.log('token(main) ===', mainToken);
   if (!mainToken)
     throw new Error();
@@ -78,6 +79,14 @@ const testParser = async () => {
     // Here we assume that main is a function, and thus has a sig
     const sigs = finalLumberState.functionSignatures.filter(sig => sig.typeId === mainType.id);
     console.log('sigs(main) ===', sigs.toJS())
+    for (const sig of sigs) {
+      const returnType = finalSawmillState.types.get(sig.returnType);
+      console.log('return(sig(main)) ===', returnType);
+      if (!returnType)
+        throw new Error();
+      const returnedValue = finalLumberState.staticValues.find(value => value.valueType.id === returnType.id);
+      console.log('valueOf(return(main)) === ', returnedValue);
+    }
   }
 
   return assert('Should get a good AST and parse it for errors', false);

@@ -13,7 +13,7 @@ export type LiteralNumberValue = {
   id: JSValueID,
   type: 'literal-number',
   value: number,
-  type: Type,
+  valueType: Type,
 };
 */
 
@@ -21,7 +21,7 @@ const createLiteralNumber = (value/*: number*/)/*: LiteralNumberValue*/ => ({
   id: generateUUID(),
   type: 'literal-number',
   value,
-  type: createSimpleType(),
+  valueType: createSimpleType(),
 });
 
 module.exports = {

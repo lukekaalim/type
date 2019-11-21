@@ -1,12 +1,38 @@
 // @flow strict
 const { UnknownTypeIDError } = require('./errors');
 const { createSimpleType, createImplementingType, createBranchingType } = require('./type');
+const { createConstraint } = require('./constraint');
 /*::
 import type { Type, TypeID, ImplementingType } from './type';
+import type { InstanceID, Instance } from './instance';
+import type { ProgramState } from './program';
+import type { Constraint } from './constraint';
 import type { Token } from './token';
 
 import type { Map } from 'immutable';
 */
+
+const generateConstraintsForPolymorphicRelationships = (
+  state/*: ProgramState*/,
+  instance/*: Instance*/,
+)/*: Constraint[][]*/ => {
+  const latestInstanceConstraint = state.constraints.findLast(constraint => constraint.value === instance.id);
+
+  const variantRelationship = state.relationships.findLast(relationship => relationship.type === 'variant' && relationship.subject === instance.id);
+  if (variantRelationship.type !== 'variant')
+    throw new Error();
+
+  const constraints = variantRelationship.variantOf.map(variantTarget => {
+    return createConstraint(instance.id, variantTarget);
+  });
+};
+
+const generateConstraintsForIntersectionRelationships = (
+  state/*: ProgramState*/,
+  type/*: Type*/,
+)/*: Constraint[]*/ => {
+
+};
 
 // SHould create new types and add them to the state
 
