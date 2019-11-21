@@ -25,6 +25,16 @@ export type ConstrainStatement = {
   constraint: Constraint,
 }
 
+export type BranchStatement = {
+  id: StatementID,
+  type: 'branch',
+  assertion: TypeID,
+  subject: InstanceID,
+
+  ifProgram: Program,
+  elseProgram: Program,
+}
+
 export type DeclareBranchStatement = {
   id: StatementID,
   type: 'declare-if-branch',
@@ -38,6 +48,7 @@ export type Statement =
   | ExitStatement
   | CreateValueStatement
   | ConstrainStatement
+  | BranchStatement
 */
 
 const createValue = (value/*: Instance*/)/*: CreateValueStatement*/ => ({
@@ -57,8 +68,23 @@ const constrain = (constraint/*: Constraint*/)/*: ConstrainStatement*/ => ({
   constraint,
 });
 
+const branch = (
+  assertion/*: TypeID*/,
+  subject/*: InstanceID*/,
+  ifProgram/*: Program*/,
+  elseProgram/*: Program*/,
+)/*: BranchStatement*/ => ({
+  id: generateUUID(),
+  type: 'branch',
+  assertion,
+  subject,
+  ifProgram,
+  elseProgram,
+});
+
 module.exports = {
   createValue,
   constrain,
   exit,
+  branch,
 };
