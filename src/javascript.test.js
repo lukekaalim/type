@@ -8,6 +8,14 @@ const { createSourceLocation } = require('./javascript/source');
 const { createTypeToken } = require('./javascript/token');
 const { createProgram, runProgram, createProgramState } = require('./program');
 const { Map } = require('immutable');
+const { Console } = require('console');
+
+const deepConsole = new Console({
+  stdout: process.stdout,
+  stderr: process.stderr,
+  colorMode: true,
+  inspectOptions: { depth: 10 }
+});
 
 const testParser = async () => {
   const source = `
