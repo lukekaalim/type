@@ -3,6 +3,7 @@ const { Map, Record, List } = require('immutable');
 const { generateVariantsFromType } = require('./refinement');
 const { areTypesCompatible } = require('./compatibility');
 const { UnimplementedError } = require('./errors');
+const { generateConstraints } = require('./refinement');
 /*::
 import type { Statement } from './statements';
 import type { TypeID, Type } from './type';
@@ -22,7 +23,7 @@ export type Program = {
 export type ProgramState = {
   types: Map<TypeID, Type>,
   values: Map<InstanceID, Instance>,
-  constraints: List<Constraint>,
+  constraints: Constraint[],
   relationships: List<Relationship>,
   exited: boolean,
 };
@@ -67,10 +68,13 @@ const reduceState = (state, statement) => {
       return List([
         state.set('exited', true),
       ]);
-    case 'constrain':
-      return List([
-        state.update('constraints', constraints => constraints.push(statement.constraint)),
-      ]);
+    case 'branch': {
+      const instance = state.values.get(statement.subject);
+      if (!instance)
+        throw new Error();
+      const refinements = generateConstraints(state, instance.id, instance.typeId, state.constraints);
+      return refinements.map(constraints => state.set('constraints', constraints));
+    }
     /*
     case 'declare-instance':
       return [{ ...state, instances: state.instances.set(statement.declaredInstance.id, statement.declaredInstance) }];
