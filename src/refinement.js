@@ -9,29 +9,71 @@ import type { ProgramState } from './program';
 import type { Constraint } from './constraint';
 import type { Token } from './token';
 
-import type { Map } from 'immutable';
+import type { Map, RecordOf } from 'immutable';
 */
 
 const generateConstraintsForPolymorphicRelationships = (
-  state/*: ProgramState*/,
-  instance/*: Instance*/,
+  state/*: RecordOf<ProgramState>*/,
+  currentValue/*: InstanceID*/,
+  typeId/*: TypeID*/,
+  existingConstraints/*: Constraint[]*/,
 )/*: Constraint[][]*/ => {
-  const latestInstanceConstraint = state.constraints.findLast(constraint => constraint.value === instance.id);
+  const variantRelationship = state.relationships.findLast(relationship => relationship.type === 'variant' && relationship.subject === typeId);
+  if (!variantRelationship)
+    return [existingConstraints];
 
-  const variantRelationship = state.relationships.findLast(relationship => relationship.type === 'variant' && relationship.subject === instance.id);
   if (variantRelationship.type !== 'variant')
     throw new Error();
 
-  const constraints = variantRelationship.variantOf.map(variantTarget => {
-    return createConstraint(instance.id, variantTarget);
+  const currentRelationshipConstraint = existingConstraints.find(constraint => constraint.relationship === variantRelationship.id);
+  if (currentRelationshipConstraint) {
+    return generateConstraints(state, currentValue, currentRelationshipConstraint.constrainedVariant, existingConstraints);
+  }
+
+  const variantConstraints = variantRelationship.variantOf.map(variantTarget => {
+    const constrainedVariant = createConstraint(variantRelationship.id, variantTarget);
+    return generateConstraints(state, currentValue, variantTarget, [...existingConstraints, constrainedVariant]);
   });
+
+  return flatten(variantConstraints);
 };
 
 const generateConstraintsForIntersectionRelationships = (
-  state/*: ProgramState*/,
-  type/*: Type*/,
-)/*: Constraint[]*/ => {
+  state/*: RecordOf<ProgramState>*/,
+  currentValue/*: InstanceID*/,
+  typeId/*: TypeID*/,
+  existingConstraints/*: Constraint[]*/,
+)/*: Constraint[][]*/ => {
+  const intersectionalRelationship = state.relationships.findLast(relationship => relationship.type === 'intersection' && relationship.subject === typeId);
+  if (!intersectionalRelationship)
+    return [existingConstraints];
 
+  if (intersectionalRelationship.type !== 'intersection')
+    throw new Error();
+
+  const intersectionConstraintGenerators = intersectionalRelationship.intersectionOf.map(intersectedType =>
+    (constraints/*: Constraint[][]*/) => constraints.map(a => generateConstraints(state, currentValue, intersectedType, a))
+  );
+
+  const variantConstraints = intersectionConstraintGenerators.reduce((acc, curr) => flatten(curr(acc)), [existingConstraints]);
+
+  return variantConstraints;
+};
+
+const flatten = /*:: <T>*/(list/*: T[][]*/)/*: T[]*/ => list.reduce((acc, curr) => [...acc, ...curr], []);
+
+const generateConstraints = (
+  state/*: RecordOf<ProgramState>*/,
+  currentValue/*: InstanceID*/,
+  typeId/*: TypeID*/,
+  existingConstraints/*: Constraint[]*/,
+)/*: Constraint[][]*/ => {
+  const variantConstraints = [
+    refinements => refinements.map(constraints => generateConstraintsForPolymorphicRelationships(state, currentValue, typeId, constraints)),
+    refinements => refinements.map(constraints => generateConstraintsForIntersectionRelationships(state, currentValue, typeId, constraints))
+  ].reduce((acc, curr) => flatten(curr(acc)), [existingConstraints])
+  
+  return variantConstraints;
 };
 
 // SHould create new types and add them to the state
@@ -80,4 +122,5 @@ const generateVariantsFromType = (types/*: Map<TypeID, Type>*/, typeId/*: TypeID
 
 module.exports = {
   generateVariantsFromType,
+  generateConstraints,
 };

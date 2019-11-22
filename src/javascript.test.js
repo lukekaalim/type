@@ -59,6 +59,7 @@ const testParser = async () => {
   const finalSawmillStates = runProgram(createProgram({ statements: finalLumberState.statements }), finalLumberState.initialSawmillState);
 
   const mainToken = finalLumberState.valueTokens.get('main');
+  /*
   console.log('source === ', source);
   console.log('token(main) ===', mainToken);
   if (!mainToken)
@@ -88,6 +89,7 @@ const testParser = async () => {
       console.log('valueOf(return(main)) === ', returnedValue);
     }
   }
+  */
 
   return assert('Should get a good AST and parse it for errors', false);
 };

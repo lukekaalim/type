@@ -3,24 +3,22 @@ const { Record } = require('immutable');
 const generateUUID = require('uuid/v4');
 /*::
 import type { TypeID } from './type';
+import type { RelationshipID } from './relationship';
 import type { InstanceID } from './instance';
 
 export opaque type ConstraintID = string;
-// A constraint is the opposite of a 'polymorphic variant'.
-// it indicates 
+// A constraint negates a 'polymorphic variant'
 export type Constraint = {
   id: ConstraintID,
-  value: InstanceID,
-
-  variantRelationshipType: TypeID,
-  constraintType: TypeID,
+  relationship: RelationshipID,
+  constrainedVariant: TypeID,
 };
 */
 
-const createConstraint = (value/*: InstanceID*/, typeConstraint/*: TypeID*/)/*: Constraint*/ => ({
+const createConstraint = (relationship/*: RelationshipID*/, constrainedVariant/*: TypeID*/)/*: Constraint*/ => ({
   id: generateUUID(),
-  value,
-  typeConstraint,
+  relationship,
+  constrainedVariant,
 });
 
 module.exports = {

@@ -1,4 +1,5 @@
 // @flow strict
+const generateUUID = require('uuid/v4');
 
 /*::
 import type { TypeID } from './type';
@@ -34,3 +35,22 @@ export type {
   IntersectionRelationship,
 }
 */
+
+const createVariantRelationship = (subject/*: TypeID*/, variantOf/*: TypeID[]*/)/*: VariantRelationship*/ => ({
+  id: generateUUID(),
+  type: 'variant',
+  subject,
+  variantOf,
+});
+
+const createIntersectionalRelationship = (subject/*: TypeID*/, intersectionOf/*: TypeID[]*/)/*: IntersectionRelationship*/ => ({
+  id: generateUUID(),
+  type: 'intersection',
+  subject,
+  intersectionOf,
+});
+
+module.exports = {
+  createVariantRelationship,
+  createIntersectionalRelationship,
+};
