@@ -7,6 +7,7 @@ import type { Instance, InstanceID } from './instance';
 import type { TokenID } from './token';
 import type { Program } from './program';
 import type { Constraint } from './constraint';
+import type { RecordOf } from 'immutable';
 
 export opaque type StatementID = string;
 export type CreateValueStatement = {
@@ -31,8 +32,8 @@ export type BranchStatement = {
   assertion: TypeID,
   subject: InstanceID,
 
-  ifProgram: Program,
-  elseProgram: Program,
+  ifProgram: RecordOf<Program>,
+  elseProgram: RecordOf<Program>,
 }
 
 export type DeclareBranchStatement = {
@@ -71,8 +72,8 @@ const constrain = (constraint/*: Constraint*/)/*: ConstrainStatement*/ => ({
 const branch = (
   assertion/*: TypeID*/,
   subject/*: InstanceID*/,
-  ifProgram/*: Program*/,
-  elseProgram/*: Program*/,
+  ifProgram/*: RecordOf<Program>*/,
+  elseProgram/*: RecordOf<Program>*/,
 )/*: BranchStatement*/ => ({
   id: generateUUID(),
   type: 'branch',

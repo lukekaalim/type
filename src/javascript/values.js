@@ -7,6 +7,7 @@ import type { Type } from '../type';
 
 export opaque type JSValueID = string;
 export type JSValue =
+  | LiteralBooleanValue
   | LiteralNumberValue;
 
 export type LiteralNumberValue = {
@@ -15,7 +16,21 @@ export type LiteralNumberValue = {
   value: number,
   valueType: Type,
 };
+
+export type LiteralBooleanValue = {
+  id: JSValueID,
+  type: 'literal-boolean',
+  value: boolean,
+  valueType: Type,
+};
 */
+
+const createLiteralBoolean = (value/*: boolean*/)/*: LiteralBooleanValue*/ => ({
+  id: generateUUID(),
+  type: 'literal-boolean',
+  value,
+  valueType: createSimpleType(),
+});
 
 const createLiteralNumber = (value/*: number*/)/*: LiteralNumberValue*/ => ({
   id: generateUUID(),
@@ -26,4 +41,5 @@ const createLiteralNumber = (value/*: number*/)/*: LiteralNumberValue*/ => ({
 
 module.exports = {
   createLiteralNumber,
+  createLiteralBoolean,
 };

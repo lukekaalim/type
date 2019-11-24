@@ -12,6 +12,14 @@ import type { Token } from './token';
 import type { Map, RecordOf } from 'immutable';
 */
 
+/*::
+// A refinement is a _branch_ in how a program understands it's type,
+// meaning that is has made certain assumptions about how execution is evolving.
+export type Refinement = {
+  constraints: Constraint[],
+};
+*/
+
 const generateConstraintsForPolymorphicRelationships = (
   state/*: RecordOf<ProgramState>*/,
   currentValue/*: InstanceID*/,

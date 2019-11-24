@@ -9,6 +9,7 @@ import type { RecordFactory, RecordOf } from 'immutable';
 import type { Statement } from '../statements';
 import type { FunctionSignature } from './signature';
 import type { JSValue, JSValueID } from './values';
+import type { ECMAScriptPrimitives } from './ecma';
 */
 const { Record, Map, List } = require('immutable');
 const { parse } = require("acorn");
@@ -19,14 +20,17 @@ const { createInstanceToken } = require('./token');
 const { createInstance } = require('../instance');
 const { createSimpleType } = require('../type');
 const { createProgram, runProgram, createProgramState } = require('../program');
-const { exit, createValue, constrain } = require('../statements');
+const { exit, createValue, constrain, branch } = require('../statements');
 const { createConstraint } = require('../constraint');
-const { createLiteralNumber } = require('./values');
+const { createLiteralNumber, createLiteralBoolean } = require('./values');
+const { createEcmaScriptPrimitives } = require('./ecma');
+const { createVariantRelationship } = require('../relationship');
 
 /*:: 
 export type LumberState = {
   // Meta type information
   annotations: Map<AnnotationID, Annotation>,
+  primitives: ECMAScriptPrimitives,
   // Javascript state tracking
   valueTokens: Map<string, ValueToken>,
   typeTokens: Map<string, TypeToken>,
@@ -43,6 +47,7 @@ export type LumberState = {
 */
 const createLumberState/*: RecordFactory<LumberState>*/ = Record({
   annotations: Map(),
+  primitives: createEcmaScriptPrimitives(),
 
   valueTokens: Map(),
   typeTokens: Map(),
@@ -66,19 +71,28 @@ const functionDeclarator = (state, declarator, initFunction) => {
   // should get arguments here, and feed them to the function state
   // as well as resetting the return & throw states
 
-  const lumberState = createStaticRelationships(statement(initFunction.body.body, state));
+  //const argument = getLiteralBoolean(state, true);
+  const argumentValue = createInstance(state.primitives.boolean.id);
+
+  const functionState = state
+    //.update('staticValues', values => values.set(argument.id, argument))
+    .update('valueTokens', tokens => tokens.set('a', createInstanceToken('a', argumentValue.id)))
+    .update('statements', statements => statements
+      .push(createValue(argumentValue))
+    );
+
+  const lumberState = createStaticRelationships(statement(initFunction.body.body, functionState));
 
   const program = createProgram({ statements: lumberState.statements });
   const sawmillState = runProgram(program, lumberState.initialSawmillState);
 
-  const signatures = createFunctionSignatures(type.id, lumberState, sawmillState);
+  const signatures = createFunctionSignatures(type.id, lumberState, sawmillState, argumentValue);
 
   return state
     .update('staticValues', staticValues => staticValues.merge(lumberState.staticValues))
     .update('statements', statements => statements
       .push(createValue(instance))
-      .push(constrain(createConstraint(instance.id, type.id)))
-    )
+    ) 
     .update('initialSawmillState', sawmill => sawmill
       .update('types', sawmillTypes => sawmillTypes.set(type.id, type))
     )
@@ -101,11 +115,27 @@ const variableDeclaration = (state, variableNode) => {
   }, state);
 };
 
-const getLiteralValue = (state, literalDeclaration) => {
-  const literalValue = literalDeclaration.value;
+const getLiteralBoolean = (state, value) => {
+  const existingValue = state.staticValues.find(
+    staticValue => staticValue.type === 'literal-boolean' &&
+      staticValue.value === value,
+    null,
+    null
+  );
+  if (existingValue) {
+    return existingValue;
+  }
+  return createLiteralBoolean(value);
+};
+
+const getLiteralValue = (state, literalValue) => {
+  switch (typeof literalValue) {
+    case 'boolean':
+      return getLiteralBoolean(state, literalValue);
+  }
 
   if (typeof literalValue !== 'number') {
-    throw new Error(`There's no known type for the type identifier: "${typeof literalDeclaration.value}"`)
+    throw new Error(`There's no known type for the type identifier: "${typeof literalValue}"`)
   }
 
   const isLiteralNumber = value => value.type === 'literal-number' && value.value === literalValue;
@@ -120,7 +150,7 @@ const returnDeclaration = (state, returnNode) => {
     return state;
   }
 
-  const returnValue = getLiteralValue(state, returnNode.argument);
+  const returnValue = getLiteralValue(state, returnNode.argument.value);
 
   const returnSawmillValue = createInstance(returnValue.valueType.id);
 
@@ -128,18 +158,32 @@ const returnDeclaration = (state, returnNode) => {
     .update('staticValues', values => values.set(returnValue.id, returnValue))
     .update('statements', statements => statements
       .push(createValue(returnSawmillValue))
-      .push(constrain(createConstraint(returnSawmillValue.id, returnSawmillValue.typeId)))
       .push(exit())
     )
     .set('returnValue', returnSawmillValue.id)
+};
+
+const ifStatement = (state, node) => {
+  const testValueToken = state.valueTokens.get(node.test.name);
+  if (!testValueToken)
+    throw new Error();
+  const trueValue = getLiteralValue(state, true);
+
+  const lumberState = statement(node.consequent.body, state);
+  const ifProgram = createProgram({ statements: lumberState.statements, initialState: lumberState.initialSawmillState })
+
+  return state
+    .update('staticValues', values => values.set(trueValue.id, trueValue))
+    .update('statements', statements => statements
+      .push(branch(trueValue.valueType.id, testValueToken.valueId, ifProgram, createProgram()))
+    )
 };
 
 const statement = (body, initialState)/*: RecordOf<LumberState>*/ => {
   return body.reduce((state, node) => {
     switch (node.type) {
       case 'IfStatement':
-        console.log(node)
-        return state;
+        return ifStatement(state, node);
       case 'VariableDeclaration':
         return variableDeclaration(state, node);
       case 'ReturnStatement':
@@ -159,6 +203,10 @@ const createNumericRelationship = (state, literalNumberValue) => {
 };
 
 const createStaticRelationships = (state) => {
+  const booleans = [createSimpleType()];
+  for (const value of state.staticValues.values())
+    value.type === 'literal-boolean' && booleans.push(value.valueType);
+  
   return state.staticValues.reduce((state, value) => {
     switch (value.type) {
       case 'literal-number':
@@ -166,7 +214,16 @@ const createStaticRelationships = (state) => {
       default:
         return state;
     }
-  }, state);
+  }, state)
+    .update('initialSawmillState', initialSawmillState => initialSawmillState
+      .update('types', types => types
+        .merge(booleans.map(v => [v.id, v]))
+        .set(state.primitives.boolean.id, state.primitives.boolean)
+      )
+      .update('relationships', relationships => relationships
+        .push(createVariantRelationship(state.primitives.boolean.id, booleans.map(value => value.id)))
+      )
+    );
 };
 
 const getProgramFromSource = (

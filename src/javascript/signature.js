@@ -1,11 +1,13 @@
 // @flow strict
 const generateUUID = require('uuid/v4');
 /*::
-import type { RecordFactory, RecordOf, List } from 'immutable';
+import type { RecordFactory, RecordOf } from 'immutable';
 import type { ProgramState } from '../program';
 import type { TypeID } from '../type';
 import type { LumberState } from './parser';
+import type { Instance } from '../instance';
 */
+const { List } = require('immutable');
 /*::
 export opaque type FunctionSignatureID = string;
 export type FunctionSignature = {
@@ -29,17 +31,20 @@ const resolveConstraint = (constraints, value) => {
 const createFunctionSignatures = (
   typeId/*: TypeID*/,
   lumberState/*: RecordOf<LumberState>*/,
-  sawmillStates/*: List<RecordOf<ProgramState>>*/
-)/*: List<FunctionSignature>*/ => {
+  sawmillStates/*: RecordOf<ProgramState>[]*/,
+  argumentValue/*: Instance*/,
+)/*: FunctionSignature[]*/ => {
   return sawmillStates
     .map(({ types, values, constraints }) => {
       const undefinedType = lumberState.typeTokens.get('undefined');
       if (!undefinedType)
         throw new Error('Can\'t return then type Undefined when the environment does not support Undefined!')
-
-      const returnType = resolveConstraint(constraints, lumberState.returnValue) || undefinedType.typeId;
-      const throwType = resolveConstraint(constraints, lumberState.throwValue) || undefinedType.typeId;
-      const argumentTypes = lumberState.argumentValues.map(argumentValue => resolveConstraint(constraints, argumentValue) || undefinedType.typeId);
+      
+      const returnValue = lumberState.returnValue ? values.get(lumberState.returnValue) : null;
+      const returnType = returnValue ? returnValue.typeId : undefinedType.typeId;
+      console.log(constraints);
+      const throwType = undefinedType.typeId;
+      const argumentTypes = List([argumentValue.typeId]);
 
       return {
         id: generateUUID(),

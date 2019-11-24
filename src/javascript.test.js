@@ -9,6 +9,7 @@ const { createTypeToken } = require('./javascript/token');
 const { createProgram, runProgram, createProgramState } = require('./program');
 const { Map } = require('immutable');
 const { Console } = require('console');
+const { inspect } = require('util');
 
 const deepConsole = new Console({
   stdout: process.stdout,
@@ -19,9 +20,12 @@ const deepConsole = new Console({
 
 const testParser = async () => {
   const source = `
-  // (number)
+  // (boolean)
   const main = (a) => {
-    return 10;
+    if (a) {
+      return 69;
+    }
+    return 400;
   };
   `;
   const alphaType = createSimpleType();
@@ -59,39 +63,31 @@ const testParser = async () => {
   const finalSawmillStates = runProgram(createProgram({ statements: finalLumberState.statements }), finalLumberState.initialSawmillState);
 
   const mainToken = finalLumberState.valueTokens.get('main');
-  /*
-  console.log('source === ', source);
-  console.log('token(main) ===', mainToken);
-  if (!mainToken)
-    throw new Error();
-  for (const finalSawmillState of finalSawmillStates) {
-    const mainValue = finalSawmillState.values.get(mainToken.valueId);
-    console.log('value(main) ===', mainValue);
-    if (!mainValue)
+  const get = /*:: <T>*/(x/*: ?T*/)/*: T*/ => {
+    if (!x)
       throw new Error();
-    const mainConstraint = finalSawmillState.constraints.findLast(constraint => constraint.value === mainValue.id);
-    console.log('constraint(main) ===', mainConstraint);
-    if (!mainConstraint)
-      throw new Error();
-    const mainType = finalSawmillState.types.get(mainConstraint.typeConstraint);
-    console.log('type(main) ===', mainType)
-    if (!mainType)
-      throw new Error();
-    // Here we assume that main is a function, and thus has a sig
-    const sigs = finalLumberState.functionSignatures.filter(sig => sig.typeId === mainType.id);
-    console.log('sigs(main) ===', sigs.toJS())
-    for (const sig of sigs) {
-      const returnType = finalSawmillState.types.get(sig.returnType);
-      console.log('return(sig(main)) ===', returnType);
-      if (!returnType)
-        throw new Error();
-      const returnedValue = finalLumberState.staticValues.find(value => value.valueType.id === returnType.id);
-      console.log('valueOf(return(main)) === ', returnedValue);
-    }
+    return x;
   }
-  */
+  deepConsole.log(finalLumberState.toJS())
+  for (const state of finalSawmillStates) {
+    deepConsole.log(state.toJS());
+    const getIdentifierOfTypeID = typeId => finalLumberState.typeTokens.find(token => token.typeId === typeId).identifier;
+    const getTypeIDOfIdentifier = identifier => finalLumberState.typeTokens.find(token => token.identifier === identifier, null).typeId;
+    const getValueIDOfIdentifier = identifier => finalLumberState.valueTokens.find(token => token.identifier === identifier, null).valueId;
+    const getTypeOfValueID = valueId => get(state.values.get(valueId)).typeId;
+    const getSigOfFunction = typeId => get(finalLumberState.functionSignatures.find(x => x.typeId === typeId));
+    const getStaticValueOfType = typeId => finalLumberState.staticValues.find(x => x.valueType.id === typeId);
+  
+    const valueId = getValueIDOfIdentifier('main')
+    const typeId = getTypeOfValueID(valueId);
+    const sig = getSigOfFunction(typeId);
+    const returnValue = getStaticValueOfType(sig.returnType);
 
-  return assert('Should get a good AST and parse it for errors', false);
+    deepConsole.log([...sig.argumentTypes.values()]);
+    deepConsole.log(returnValue);
+  }
+
+  return assertToDo('todo');
 };
 
 const testJavascript = async () => {
