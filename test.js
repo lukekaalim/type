@@ -6,7 +6,7 @@ const { writeFile } = require('fs').promises;
 
 const test = async () => {
   try {
-    console.log('\033[H\033[2J')
+    console.log('\033c')
     const assertion = assert('@lukekaalim/type should provide a safe typing language', [
       await testJavascript(),
       await testRefinement(),
