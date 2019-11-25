@@ -45,6 +45,7 @@ export type LumberState = {
   argumentValues: List<InstanceID>,
 };
 */
+
 const createLumberState/*: RecordFactory<LumberState>*/ = Record({
   annotations: Map(),
   primitives: createEcmaScriptPrimitives(),

@@ -6,6 +6,7 @@ import type { ProgramState } from '../program';
 import type { TypeID } from '../type';
 import type { LumberState } from './parser';
 import type { Instance } from '../instance';
+import type { Constraint } from '../constraint';
 */
 const { List } = require('immutable');
 /*::
@@ -14,6 +15,7 @@ export type FunctionSignature = {
   id: FunctionSignatureID,
   typeId: TypeID,
 
+  constraints: List<Constraint>,
   argumentTypes: List<TypeID>,
   returnType: TypeID,
   throwType: TypeID,
@@ -42,7 +44,6 @@ const createFunctionSignatures = (
       
       const returnValue = lumberState.returnValue ? values.get(lumberState.returnValue) : null;
       const returnType = returnValue ? returnValue.typeId : undefinedType.typeId;
-      console.log(constraints);
       const throwType = undefinedType.typeId;
       const argumentTypes = List([argumentValue.typeId]);
 
@@ -50,6 +51,7 @@ const createFunctionSignatures = (
         id: generateUUID(),
         typeId,
 
+        constraints: List(constraints),
         argumentTypes,
         returnType,
         throwType
