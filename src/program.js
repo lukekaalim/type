@@ -1,9 +1,8 @@
 // @flow strict
 const { Map, Record, List } = require('immutable');
-const { generateVariantsFromType } = require('./refinement');
 const { areTypesCompatible } = require('./compatibility');
 const { UnimplementedError } = require('./errors');
-const { generateConstraints } = require('./refinement');
+const { createRefinementsForTypeId } = require('./refinement');
 /*::
 import type { Statement } from './statements';
 import type { TypeID, Type } from './type';
@@ -24,9 +23,9 @@ export type Program = {
 export type ProgramState = {
   types: Map<TypeID, Type>,
   values: Map<InstanceID, Instance>,
-  constraints: Constraint[],
-  variantRelationships: Map<VariantRelationshipID, VariantRelationship>,
-  intersectionRelationships: Map<IntersectionRelationshipID, IntersectionRelationship>,
+  constraints: Map<InstanceID, List<Constraint>>,
+  variantRelationships: List<VariantRelationship>,
+  intersectionRelationships: List<IntersectionRelationship>,
   exited: boolean,
 };
 */
@@ -34,8 +33,9 @@ export type ProgramState = {
 const createProgramState/*: RecordFactory<ProgramState>*/ = Record({
   types: Map(),
   values: Map(),
-  constraints: List(),
-  variantRelationships: Map(),
+  constraints: Map(),
+  variantRelationships: List(),
+  intersectionRelationships: List(),
   exited: false,
 });
 
@@ -59,7 +59,7 @@ const runProgram = (
     .map/*:: <RecordOf<ProgramState>>*/(state => state.set('exited', true));
 };
 
-const reduceState = (state, statement) => {
+const reduceState = (state/*: RecordOf<ProgramState>*/, statement) => {
   if (state.exited) {
     return [state];
   }
@@ -76,8 +76,10 @@ const reduceState = (state, statement) => {
       const instance = state.values.get(statement.subject);
       if (!instance)
         throw new Error();
-      const refinements = generateConstraints(state, instance.id, instance.typeId, state.constraints);
-      return refinements.map(constraints => state.set('constraints', constraints));
+      const refinements = createRefinementsForTypeId(state, instance.typeId, state.constraints.get(instance.id, List()));
+      return refinements.map(newConstraints => state
+        .update('constraints', constraints => constraints.set(instance.id, newConstraints.constraints))
+      );
     }
     default:
       throw new UnimplementedError(`Reduce State, case: ${statement.type}`);

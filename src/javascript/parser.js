@@ -221,7 +221,7 @@ const createStaticRelationships = (state) => {
         .merge(booleans.map(v => [v.id, v]))
         .set(state.primitives.boolean.id, state.primitives.boolean)
       )
-      .update('relationships', relationships => relationships
+      .update('variantRelationships', relationships => relationships
         .push(createVariantRelationship(state.primitives.boolean.id, booleans.map(value => value.id)))
       )
     );

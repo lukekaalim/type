@@ -12,8 +12,8 @@ type VariantRelationshipID = string;
 type VariantRelationship = {
   id: RelationshipID,
   type: 'variant',
-  subject: TypeID,
-  variantOfId: TypeID[],
+  subjectId: TypeID,
+  variantOfIds: TypeID[],
 };
 
 // The selected type is an *intersection*, that is,
@@ -22,8 +22,8 @@ type IntersectionRelationshipID = string;
 type IntersectionRelationship = {
   id: RelationshipID,
   type: 'intersection',
-  subject: TypeID,
-  intersectionOf: TypeID[],
+  subjectId: TypeID,
+  intersectionOfIds: TypeID[],
 };
 
 type Relationship =
@@ -40,18 +40,18 @@ export type {
 };
 */
 
-const createVariantRelationship = (subject/*: TypeID*/, variantOf/*: TypeID[]*/)/*: VariantRelationship*/ => ({
+const createVariantRelationship = (subjectId/*: TypeID*/, variantOfIds/*: TypeID[]*/)/*: VariantRelationship*/ => ({
   id: generateUUID(),
   type: 'variant',
-  subject,
-  variantOf,
+  subjectId,
+  variantOfIds,
 });
 
-const createIntersectionalRelationship = (subject/*: TypeID*/, intersectionOf/*: TypeID[]*/)/*: IntersectionRelationship*/ => ({
+const createIntersectionalRelationship = (subjectId/*: TypeID*/, intersectionOfIds/*: TypeID[]*/)/*: IntersectionRelationship*/ => ({
   id: generateUUID(),
   type: 'intersection',
-  subject,
-  intersectionOf,
+  subjectId,
+  intersectionOfIds,
 });
 
 module.exports = {
