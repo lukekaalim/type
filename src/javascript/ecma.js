@@ -10,6 +10,8 @@ type ECMAScriptPrimitives = {
   string: Type,
   function: Type,
   object: Type,
+  undefined: Type,
+  null: Type,
 };
 */
 
@@ -19,6 +21,8 @@ const createEcmaScriptPrimitives = ()/*: ECMAScriptPrimitives*/ => {
   const stringType = createSimpleType();
   const functionType = createSimpleType();
   const objectType = createSimpleType();
+  const undefinedType = createSimpleType();
+  const nullType = createSimpleType();
 
   return {
     number: numberType,
@@ -26,6 +30,8 @@ const createEcmaScriptPrimitives = ()/*: ECMAScriptPrimitives*/ => {
     string: stringType,
     function: functionType,
     object: objectType,
+    undefined: undefinedType,
+    null: nullType,
   };
 };
 

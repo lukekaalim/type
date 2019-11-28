@@ -2,12 +2,14 @@
 const { UnknownTypeIDError } = require('./errors');
 const { createSimpleType, createImplementingType, createBranchingType } = require('./type');
 const { createConstraint } = require('./constraint');
+const { List } = require('immutable');
 /*::
 import type { Type, TypeID, ImplementingType } from './type';
 import type { InstanceID, Instance } from './instance';
 import type { ProgramState } from './program';
 import type { Constraint } from './constraint';
 import type { Token } from './token';
+import type { VariantRelationship } from './relationship';
 
 import type { Map, RecordOf } from 'immutable';
 */
@@ -18,7 +20,52 @@ import type { Map, RecordOf } from 'immutable';
 export type Refinement = {
   constraints: Constraint[],
 };
+
+export type State = {
+
+}
 */
+
+const createRefinement = (constraints/*: Constraint[]*/)/*: Refinement*/ => ({
+  constraints,
+});
+
+const reduceToFlat = /*:: <T>*/(acc/*: T[]*/, curr/*: T[]*/)/*: T[]*/ => [...acc, ...curr];
+
+const createRefinementsForVariant = (state, relationship, constraints) => {
+  const existingConstraint = constraints.find(c => c.relationshipId === relationship.id);
+  if (existingConstraint) {
+    return createRefinements(state, existingConstraint.constrainedVariantId, constraints);
+  }
+
+  return relationship.variantOfId
+    .map(variantId => createRefinements(state, variantId, constraints.push(createConstraint(relationship.id, variantId))))
+    .reduce(reduceToFlat, []);
+};
+
+const createRefinementForIntersection = (state, relationship, constraints): Refinement[] => {
+  relationship.intersectionOf
+    .reduce(intersectionId => createRefinements(state, intersectionId, constraints))
+
+};
+
+const createRefinements = (state: ProgramState, typeId: TypeID, constraints: List<Constraint>)/*: Refinement[]*/ => {
+  let refinements = [createRefinement(constraints.toArray())];
+
+  const variantRelationship = state.variantRelationships.find(r => r.subject === typeId, null, null);
+  if (variantRelationship) {
+    refinements = createRefinementsForVariant(state, variantRelationship, constraints);
+  }
+  
+  const intersectionRelationship = state.intersectionRelationships.find(r => r.subject === typeId);
+  if (intersectionRelationship) {
+    refinements = refinements
+      .map(refinement => createRefinementForIntersection(state, intersectionRelationship, refinement.constraints))
+      .reduce(reduceToFlat, []);
+  }
+  
+  return refinements;
+};
 
 const generateConstraintsForPolymorphicRelationships = (
   state/*: RecordOf<ProgramState>*/,

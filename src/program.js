@@ -10,7 +10,7 @@ import type { TypeID, Type } from './type';
 import type { TokenID, Token } from './token';
 import type { Constraint } from './constraint';
 import type { InstanceID, Instance } from './instance';
-import type { Relationship, RelationshipID } from './relationship';
+import type { VariantRelationship, VariantRelationshipID, IntersectionRelationshipID, IntersectionRelationship } from './relationship';
 
 import type { RecordOf, RecordFactory } from 'immutable';
 
@@ -25,7 +25,8 @@ export type ProgramState = {
   types: Map<TypeID, Type>,
   values: Map<InstanceID, Instance>,
   constraints: Constraint[],
-  relationships: List<Relationship>,
+  variantRelationships: Map<VariantRelationshipID, VariantRelationship>,
+  intersectionRelationships: Map<IntersectionRelationshipID, IntersectionRelationship>,
   exited: boolean,
 };
 */
@@ -34,7 +35,7 @@ const createProgramState/*: RecordFactory<ProgramState>*/ = Record({
   types: Map(),
   values: Map(),
   constraints: List(),
-  relationships: List(),
+  variantRelationships: Map(),
   exited: false,
 });
 

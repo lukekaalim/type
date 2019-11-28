@@ -40,9 +40,9 @@ export type LumberState = {
   statements: List<Statement>,
   staticValues: Map<JSValueID, JSValue>,
   // signature generation
-  returnValue: null | InstanceID,
-  throwValue: null | InstanceID,
-  argumentValues: List<InstanceID>,
+  returnValueId: null | InstanceID,
+  throwValueId: null | InstanceID,
+  argumentValuesIds: null | InstanceID[],
 };
 */
 

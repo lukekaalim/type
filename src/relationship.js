@@ -8,15 +8,17 @@ opaque type RelationshipID = string;
 
 // The subject type is Variant, in that is can substitute itself
 // where the types it is PolymorphicOf would normally be.
+type VariantRelationshipID = string;
 type VariantRelationship = {
   id: RelationshipID,
   type: 'variant',
   subject: TypeID,
-  variantOf: TypeID[],
+  variantOfId: TypeID[],
 };
 
 // The selected type is an *intersection*, that is,
 // it is considered to be 'composed' of all of a section of other types
+type IntersectionRelationshipID = string;
 type IntersectionRelationship = {
   id: RelationshipID,
   type: 'intersection',
@@ -31,9 +33,11 @@ type Relationship =
 export type {
   RelationshipID,
   Relationship,
+  VariantRelationshipID,
   VariantRelationship,
   IntersectionRelationship,
-}
+  IntersectionRelationshipID,
+};
 */
 
 const createVariantRelationship = (subject/*: TypeID*/, variantOf/*: TypeID[]*/)/*: VariantRelationship*/ => ({

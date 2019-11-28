@@ -10,15 +10,15 @@ export opaque type ConstraintID = string;
 // A constraint negates a 'polymorphic variant'
 export type Constraint = {
   id: ConstraintID,
-  relationship: RelationshipID,
-  constrainedVariant: TypeID,
+  relationshipId: RelationshipID,
+  constrainedVariantId: TypeID,
 };
 */
 
-const createConstraint = (relationship/*: RelationshipID*/, constrainedVariant/*: TypeID*/)/*: Constraint*/ => ({
+const createConstraint = (relationshipId/*: RelationshipID*/, constrainedVariantId/*: TypeID*/)/*: Constraint*/ => ({
   id: generateUUID(),
-  relationship,
-  constrainedVariant,
+  relationshipId,
+  constrainedVariantId,
 });
 
 module.exports = {
