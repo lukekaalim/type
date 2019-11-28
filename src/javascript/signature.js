@@ -17,28 +17,20 @@ export type ParameterID = string;
 
 type Parameter = {
   id: ParameterID,
-  constraints: Constraint[],
+  constraints: List<Constraint>,
   typeId: TypeID,
 }
 
 export type FunctionSignature = {
   id: FunctionSignatureID,
 
-  parameters: Parameter[],
+  parameters: Map<ParameterID, Parameter>,
 
-  arguments: ParameterID[],
-  returns: ParameterID,
-  throws: ParameterID,
+  argumentParameterIds: List<ParameterID>,
+  returnsParameterId: ParameterID,
+  throwsParameterId: ParameterID,
 };
 */
-
-const resolveConstraint = (constraints, value) => {
-  const finalConstraint = constraints.findLast(constraint => constraint.value === value, null, null);
-  if (finalConstraint) {
-    return finalConstraint.typeConstraint;
-  }
-  return null;
-};
 
 const getTypeIdFromInstanceId = (lumber, sawmill, valueId) => {
   if (!valueId) {
@@ -51,50 +43,54 @@ const getTypeIdFromInstanceId = (lumber, sawmill, valueId) => {
   return value.typeId;
 };
 
-const createParamter = (typeId, constraints) => ({
+const getConstraintsFromInstanceId = (sawmill, valueId) => {
+  if (!valueId) {
+    return List();
+  }
+  const constraints = sawmill.constraints.get(valueId);
+  if (!constraints) {
+    return List();
+  }
+  return constraints;
+}
+
+const createParamter = (typeId, constraints)/*: Parameter*/ => ({
   id: generateUUID(),
   constraints,
   typeId,
 });
 
-const createFunctionSignatures = (
+const createFunctionSignature = (
   lumber/*: RecordOf<LumberState>*/,
   sawmill/*: RecordOf<ProgramState>*/,
-)/*: FunctionSignature[]*/ => {
+)/*: FunctionSignature*/ => {
   const { returnValueId, throwValueId, argumentValuesIds } = lumber;
 
   const returnTypeId = getTypeIdFromInstanceId(lumber, sawmill, returnValueId);
   const throwTypeId = getTypeIdFromInstanceId(lumber, sawmill, throwValueId);
-  const argumentsTypeIds = (argumentValuesIds || []).map(valueId => getTypeIdFromInstanceId(lumber, sawmill, returnValueId));
+  const argumentsTypeIds = argumentValuesIds.map(valueId => getTypeIdFromInstanceId(lumber, sawmill, valueId));
 
-  const returnParamter = createParamter(sawmill.constraints)
+  const returnsParameter = createParamter(returnTypeId, getConstraintsFromInstanceId(sawmill, returnValueId));
+  const throwsParameter = createParamter(throwTypeId, getConstraintsFromInstanceId(sawmill, throwValueId));
+  const argumentParameters = argumentsTypeIds.map((typeId, index) => createParamter(typeId, getConstraintsFromInstanceId(sawmill, argumentValuesIds.get(index))));
+
+  const parameters = Map([
+    [returnsParameter.id, returnsParameter],
+    [throwsParameter.id, throwsParameter],
+    ...argumentParameters.map(a => [a.id, a]),
+  ]);
 
   return {
+    id: generateUUID(),
 
+    parameters,
+
+    returnsParameterId: returnsParameter.id,
+    throwsParameterId: throwsParameter.id,
+    argumentParameterIds: argumentParameters.map(a => a.id),
   };
-
-  return sawmillStates
-    .map(({ types, values, constraints }) => {
-      const undefinedType = lumberState.typeTokens.get('undefined');
-      if (!undefinedType)
-        throw new Error('Can\'t return then type Undefined when the environment does not support Undefined!')
-      
-      const returnValue = lumberState.returnValue ? values.get(lumberState.returnValue) : null;
-      const returnType = returnValue ? returnValue.typeId : undefinedType.typeId;
-      const throwType = undefinedType.typeId;
-      const argumentTypes = List([argumentValue.typeId]);
-
-      return {
-        id: generateUUID(),
-
-        constraints: List(constraints),
-        argumentTypes,
-        returnType,
-        throwType
-      };
-    })
 };
 
 module.exports = {
-  createFunctionSignatures,
+  createFunctionSignature,
 };

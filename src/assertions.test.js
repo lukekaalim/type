@@ -11,6 +11,15 @@ const assertFromUser = async (question/*: string*/) => {
   return assert(`Asked the User if this was correct (User said ${userResponse})`, userResponse === 'yes');
 };
 
+const assertEqual = (a/*: mixed*/, b/*: mixed*/) => {
+  const aString = JSON.stringify(a) || 'undefined';
+  const bString = JSON.stringify(b) || 'undefined';
+  const equal = a === b;
+  const equalitySymbol = equal ? '===' : '!==';
+  const equalityText = equal ? 'equal' : 'not equal';
+  return assert(`Values (${aString} ${equalitySymbol} ${bString}) are ${equalityText}`, equal);
+};
+
 const assertToDo = (value/*: string*/) => {
   console.log(value);
   return assert('Use has not yet decided what a test for this value is', false);
@@ -19,4 +28,5 @@ const assertToDo = (value/*: string*/) => {
 module.exports = {
   assertFromUser,
   assertToDo,
+  assertEqual,
 };

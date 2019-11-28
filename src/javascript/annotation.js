@@ -1,57 +1,68 @@
 // @flow strict
 const generateUUID = require('uuid/v4');
+const { Record, Map } = require('immutable');
 /*::
 import type { SourceLocation } from './source';
 import type { TokenID } from './token';
+import type { RecordFactory } from 'immutable';
 */
 
 /*::
-export opaque type AnnotationID = string;
-export type Annotation =
-  | FunctionAnnotation
-  | TypeTokenAnnotation
-  | ValueTokenAnnotation
-
-export type TypeTokenAnnotation = {
-  id: AnnotationID,
-  type: 'type-token',
-  tokenId: TokenID,
+export type TypeIdentifierAnnotationID = string;
+export type TypeIdentifierAnnotation = {
+  id: TypeIdentifierAnnotationID,
+  type: 'type-identifier',
+  identifier: string,
 };
 
-export type ValueTokenAnnotation = {
-  id: AnnotationID,
-  type: 'value-token',
-  tokenId: TokenID,
+export type ValueLiteralAnnotationID = string;
+export type ValueLiteralAnnotation = {
+  id: ValueLiteralAnnotationID,
+  type: 'value-literal',
+  literal: string,
 };
 
-export type FunctionAnnotation = {
-  id: AnnotationID,
-  loc: SourceLocation,
-  type: 'function',
+export type ExpressionAnnotation =
+  | TypeIdentifierAnnotation
+  | ValueLiteralAnnotation
 
-  parameters: AnnotationID[],
-  returns: null | AnnotationID,
-  throws: null | AnnotationID,
+export type FunctionExpressionAnnotationID = string;
+export type FunctionExpressionAnnotation = {
+  id: FunctionExpressionAnnotationID,
+  type: 'function-expression',
+
+  parameters: ExpressionAnnotation[],
+  returns: null | ExpressionAnnotation,
+  throws: null | ExpressionAnnotation,
 };
+
+export type AnnotationStatement =
+  | FunctionExpressionAnnotation
 */
 
 const createTypeAnnotation = (
-  tokenId/*: TokenID*/,
-)/*: TypeTokenAnnotation*/ => ({
+  identifier/*: string*/,
+)/*: TypeIdentifierAnnotation*/ => ({
   id: generateUUID(),
-  type: 'type-token',
-  tokenId,
+  type: 'type-identifier',
+  identifier,
+});
+
+const createValueAnnotation = (
+  literal/*: string*/,
+)/*: ValueLiteralAnnotation*/ => ({
+  id: generateUUID(),
+  type: 'value-literal',
+  literal,
 })
 
 const createFunctionAnnotation = (
-  loc/*: SourceLocation*/,
-  parameters/*: AnnotationID[]*/,
-  returns/*: null | AnnotationID*/ = null,
-  throws/*: null | AnnotationID*/ = null,
-)/*: FunctionAnnotation*/ => ({
+  parameters/*: ExpressionAnnotation[]*/ = [],
+  returns/*: null | ExpressionAnnotation*/ = null,
+  throws/*: null | ExpressionAnnotation*/ = null,
+)/*: FunctionExpressionAnnotation*/ => ({
   id: generateUUID(),
-  type: 'function',
-  loc,
+  type: 'function-expression',
   parameters,
   returns,
   throws,
@@ -60,6 +71,7 @@ const createFunctionAnnotation = (
 module.exports = {
   createFunctionAnnotation,
   createTypeAnnotation,
+  createValueAnnotation,
 };
 
 /*!

@@ -3,18 +3,19 @@
 import type { Identifier, ValueToken, TypeToken } from './token';
 import type { TypeID } from '../type';
 import type { Program, ProgramState } from '../program';
-import type { AnnotationID, Annotation } from './annotation';
 import type { InstanceID, Instance } from '../instance';
 import type { RecordFactory, RecordOf } from 'immutable';
 import type { Statement } from '../statements';
 import type { FunctionSignature } from './signature';
 import type { JSValue, JSValueID } from './values';
+import type { SourceLocation } from './source';
 import type { ECMAScriptPrimitives } from './ecma';
+import type { AnnotationStatement } from './annotation';
 */
 const { Record, Map, List } = require('immutable');
 const { parse } = require("acorn");
 
-const { createFunctionSignatures } = require('./signature');
+const { createFunctionSignature } = require('./signature');
 const { createSourceLocation } = require('./source');
 const { createInstanceToken } = require('./token');
 const { createInstance } = require('../instance');
@@ -25,11 +26,13 @@ const { createConstraint } = require('../constraint');
 const { createLiteralNumber, createLiteralBoolean } = require('./values');
 const { createEcmaScriptPrimitives } = require('./ecma');
 const { createVariantRelationship } = require('../relationship');
+const { parseArrowFunctionExpression } = require('./values/function');
 
 /*:: 
 export type LumberState = {
   // Meta type information
-  annotations: Map<AnnotationID, Annotation>,
+  sourceCode: string,
+  annotations: Map<SourceLocation, AnnotationStatement>,
   primitives: ECMAScriptPrimitives,
   // Javascript state tracking
   valueTokens: Map<string, ValueToken>,
@@ -42,11 +45,12 @@ export type LumberState = {
   // signature generation
   returnValueId: null | InstanceID,
   throwValueId: null | InstanceID,
-  argumentValuesIds: null | InstanceID[],
+  argumentValuesIds: List<InstanceID>,
 };
 */
 
 const createLumberState/*: RecordFactory<LumberState>*/ = Record({
+  sourceCode: '',
   annotations: Map(),
   primitives: createEcmaScriptPrimitives(),
 
@@ -58,55 +62,17 @@ const createLumberState/*: RecordFactory<LumberState>*/ = Record({
   statements: List(),
   staticValues: Map(),
 
-  returnValue: null,
-  throwValue: null,
-  argumentValues: List(),
+  returnValueId: null,
+  throwValueId: null,
+  argumentValuesIds: List(),
 }, 'JSParserState');
-
-const functionDeclarator = (state, declarator, initFunction) => {
-  // Every function is unique
-  const type = createSimpleType();
-  const instance = createInstance(type.id);
-  const token = createInstanceToken(declarator.id.name, instance.id);
-
-  // should get arguments here, and feed them to the function state
-  // as well as resetting the return & throw states
-
-  //const argument = getLiteralBoolean(state, true);
-  const argumentValue = createInstance(state.primitives.boolean.id);
-
-  const functionState = state
-    //.update('staticValues', values => values.set(argument.id, argument))
-    .update('valueTokens', tokens => tokens.set('a', createInstanceToken('a', argumentValue.id)))
-    .update('statements', statements => statements
-      .push(createValue(argumentValue))
-    );
-
-  const lumberState = createStaticRelationships(statement(initFunction.body.body, functionState));
-
-  const program = createProgram({ statements: lumberState.statements });
-  const sawmillState = runProgram(program, lumberState.initialSawmillState);
-
-  const signatures = createFunctionSignatures(type.id, lumberState, sawmillState, argumentValue);
-
-  return state
-    .update('staticValues', staticValues => staticValues.merge(lumberState.staticValues))
-    .update('statements', statements => statements
-      .push(createValue(instance))
-    ) 
-    .update('initialSawmillState', sawmill => sawmill
-      .update('types', sawmillTypes => sawmillTypes.set(type.id, type))
-    )
-    .update('functionSignatures', allSignatures => allSignatures.merge(signatures))
-    .update('valueTokens', valueTokens => valueTokens.set(token.identifier, token))
-};
 
 const variableDeclarator = (state, declarator) => {
   switch (declarator.init.type) {
     default:
       return state;
     case 'ArrowFunctionExpression':
-      return functionDeclarator(state, declarator, declarator.init);
+      return parseArrowFunctionExpression(state, declarator.init);
   }
 };
 
@@ -180,7 +146,7 @@ const ifStatement = (state, node) => {
     )
 };
 
-const statement = (body, initialState)/*: RecordOf<LumberState>*/ => {
+const statement = (body/*: EstreeStatement[]*/, initialState/*: RecordOf<LumberState>*/)/*: RecordOf<LumberState>*/ => {
   return body.reduce((state, node) => {
     switch (node.type) {
       case 'IfStatement':
@@ -203,7 +169,7 @@ const createNumericRelationship = (state, literalNumberValue) => {
     )
 };
 
-const createStaticRelationships = (state) => {
+const createStaticRelationships = (state/*: RecordOf<LumberState>*/) => {
   const booleans = [createSimpleType()];
   for (const value of state.staticValues.values())
     value.type === 'literal-boolean' && booleans.push(value.valueType);
@@ -238,4 +204,6 @@ const getProgramFromSource = (
 module.exports = {
   createLumberState,
   getProgramFromSource,
+  createStaticRelationships,
+  statement,
 };
