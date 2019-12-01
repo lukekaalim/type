@@ -10,9 +10,9 @@ import { promises } from 'fs';
 
 const { writeFile } = promises;
 
-const test = async () => {
+const testType = async () => {
   try {
-    process.stdout.write('\\033c')
+    process.stdout.write('\u001bc')
     const assertion = assert('@lukekaalim/type should provide a safe typing language', [
       //await testJavascript(),
       await testRefinement(),
@@ -27,4 +27,4 @@ const test = async () => {
   }
 };
 
-test();
+testType();
