@@ -1,15 +1,17 @@
 // @flow strict
-const generateUUID = require('uuid/v4');
+import generateUUID from 'uuid/v4.js';
+
 /*::
 import type { RecordFactory, RecordOf } from 'immutable';
-import type { ProgramState } from '../program';
-import type { TypeID } from '../type';
-import type { LumberState } from './parser';
-import type { Instance, InstanceID } from '../instance';
-import type { Constraint } from '../constraint';
+import type { ProgramState } from '../program.js';
+import type { TypeID } from '../type.js';
+import type { LumberState } from './parser.js';
+import type { Instance, InstanceID } from '../instance.js';
+import type { Constraint } from '../constraint.js';
 */
-const { List, Map } = require('immutable');
-const { createInstance } = require('../instance');
+import immutable from 'immutable';
+
+import { createInstance } from '../instance.js';
 /*::
 export opaque type FunctionSignatureID = string;
 
@@ -31,6 +33,7 @@ export type FunctionSignature = {
   throwsParameterId: ParameterID,
 };
 */
+const { List, Map } = immutable;
 
 const getTypeIdFromInstanceId = (lumber, sawmill, valueId) => {
   if (!valueId) {
@@ -91,6 +94,9 @@ const createFunctionSignature = (
   };
 };
 
-module.exports = {
-  createFunctionSignature,
+const exported = {
+  createFunctionSignature
 };
+
+export default exported;
+export { createFunctionSignature };

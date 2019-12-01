@@ -5,5 +5,8 @@ declare module 'acorn' {
     onComment?: (isBlock: boolean, comment: string, start: number, end: number) => void,
   }
 
-  declare export function parse(sourceCode: string, config?: AcornConfig): EstreeProgram;
+  declare function parse(sourceCode: string, config?: AcornConfig): EstreeProgram;
+  declare module.exports: {
+    parse: typeof parse
+  };
 }

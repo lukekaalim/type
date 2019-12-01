@@ -1,9 +1,11 @@
 // @flow strict
-const generateUUID = require('uuid/v4');
-const { Record, Map } = require('immutable');
+import generateUUID from 'uuid/v4.js';
+
+import immutable from 'immutable';
+const { Record, Map } = immutable;
 /*::
-import type { SourceLocation } from './source';
-import type { TokenID } from './token';
+import type { SourceLocation } from './source.js';
+import type { TokenID } from './token.js';
 import type { RecordFactory } from 'immutable';
 */
 
@@ -68,10 +70,10 @@ const createFunctionAnnotation = (
   throws,
 });
 
-module.exports = {
+const exported = {
   createFunctionAnnotation,
   createTypeAnnotation,
-  createValueAnnotation,
+  createValueAnnotation
 };
 
 /*!
@@ -79,3 +81,6 @@ module.exports = {
 //! (string, number) => boolean, NewError | OldError | OtherError
 const abc = (a, b) => c
 */
+
+export default exported;
+export { createFunctionAnnotation, createTypeAnnotation, createValueAnnotation };

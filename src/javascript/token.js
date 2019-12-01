@@ -1,10 +1,10 @@
 // @flow strict
-const generateUUID = require('uuid/v4');
+import generateUUID from 'uuid/v4.js';
 
 /*::
-import type { TypeID } from '../type';
-import type { InstanceID } from '../instance';
-import type { SourceLocation } from './source';
+import type { TypeID } from '../type.js';
+import type { InstanceID } from '../instance.js';
+import type { SourceLocation } from './source.js';
 
 export opaque type TokenID: string = string;
 export opaque type Identifier: string = string;
@@ -49,7 +49,10 @@ const findIdentifier = () => {
 
 };
 
-module.exports = {
+const exported = {
   createTypeToken,
-  createInstanceToken,
+  createInstanceToken
 };
+
+export default exported;
+export { createTypeToken, createInstanceToken };

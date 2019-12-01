@@ -1,7 +1,9 @@
 // @flow strict
-const { getLineFromIndex } = require('./source');
-const { assert } = require('@lukekaalim/test');
-const { assertEqual } = require('../assertions.test.js');
+import { getLineFromIndex } from './source.js';
+
+import test from '@lukekaalim/test';
+const { assert } = test;
+import { assertEqual } from '../assertions.test.js';
 
 const expectLinesFromIndex = () => {
   const source =
@@ -24,6 +26,9 @@ const expectSource = () => {
   ]);
 };
 
-module.exports = {
-  expectSource,
+const exported = {
+  expectSource
 };
+
+export default exported;
+export { expectSource };

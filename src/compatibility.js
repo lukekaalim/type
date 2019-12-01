@@ -1,9 +1,9 @@
 // @flow strict
 /*::
-import type { Type, TypeID } from './type';
+import type { Type, TypeID } from './type.js';
 import type { Map } from 'immutable';
 */
-const { UnimplementedError, UnknownTypeIDError } = require('./errors');
+import { UnimplementedError, UnknownTypeIDError } from './errors.js';
 
 const areTypesCompatible = (
   types/*: Map<TypeID, Type>*/,
@@ -46,6 +46,9 @@ const areTypesCompatible = (
   }
 };
 
-module.exports = {
-  areTypesCompatible,
+const exported = {
+  areTypesCompatible
 };
+
+export default exported;
+export { areTypesCompatible };

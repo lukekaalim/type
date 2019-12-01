@@ -1,8 +1,9 @@
 // @flow strict
 /*::
-import type { Type, TypeID } from '../type';
+import type { Type, TypeID } from '../type.js';
 */
-const { createSimpleType } = require('../type');
+import { createSimpleType } from '../type.js';
+
 /*::
 type ECMAScriptPrimitives = {
   number: Type,
@@ -35,12 +36,15 @@ const createEcmaScriptPrimitives = ()/*: ECMAScriptPrimitives*/ => {
   };
 };
 
-module.exports = {
-  createEcmaScriptPrimitives,
-}
+const exported = {
+  createEcmaScriptPrimitives
+};
 
 /*::
 export type {
   ECMAScriptPrimitives,
 };
 */
+
+export default exported;
+export { createEcmaScriptPrimitives };

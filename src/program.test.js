@@ -1,13 +1,15 @@
 // @flow strict
-const { createProgram, getProgramState } = require('./program');
-const { createInstance } = require('./instance');
-const { createSimpleType, createBranchingType, createImplementingType } = require('./type');
-const {
+import { createProgram, getProgramState } from './program.js';
+
+import { createInstance } from './instance.js';
+import { createSimpleType, createBranchingType, createImplementingType } from './type.js';
+
+import {
   createDeclareInstanceStatement,
   createDeclareTypeStatement,
   createDeclareReturnStatement,
   createDeclareIfBranchStatement,
-} = require('./statements');
+} from './statements';
 
 const test = () => {
   const trueType = createSimpleType();

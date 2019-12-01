@@ -1,9 +1,10 @@
 // @flow strict
-const generateUUID = require('uuid/v4');
-const { createSimpleType } = require('../type');
+import generateUUID from 'uuid/v4.js';
+
+import { createSimpleType } from '../type.js';
 
 /*::
-import type { Type } from '../type';
+import type { Type } from '../type.js';
 
 export opaque type JSValueID = string;
 export type JSValue =
@@ -39,7 +40,10 @@ const createLiteralNumber = (value/*: number*/)/*: LiteralNumberValue*/ => ({
   valueType: createSimpleType(),
 });
 
-module.exports = {
+const exported = {
   createLiteralNumber,
-  createLiteralBoolean,
+  createLiteralBoolean
 };
+
+export default exported;
+export { createLiteralNumber, createLiteralBoolean };

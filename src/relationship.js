@@ -1,8 +1,8 @@
 // @flow strict
-const generateUUID = require('uuid/v4');
+import generateUUID from 'uuid/v4.js';
 
 /*::
-import type { TypeID } from './type';
+import type { TypeID } from './type.js';
 
 opaque type RelationshipID = string;
 
@@ -54,7 +54,10 @@ const createIntersectionalRelationship = (subjectId/*: TypeID*/, intersectionOfI
   intersectionOfIds,
 });
 
-module.exports = {
+const exported = {
   createVariantRelationship,
-  createIntersectionalRelationship,
+  createIntersectionalRelationship
 };
+
+export default exported;
+export { createVariantRelationship, createIntersectionalRelationship };

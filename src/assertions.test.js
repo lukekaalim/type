@@ -1,11 +1,13 @@
 // @flow strict
-const { createInterface } = require('readline');
-const { assert } = require('@lukekaalim/test');
+import { createInterface } from 'readline';
+
+import test from '@lukekaalim/test';
+const { assert } = test;
 
 const assertFromUser = async (question/*: string*/) => {
-  const interface = createInterface({ input: process.stdin, output: process.stdout });
-  const userResponse = await new Promise(res => interface.question(question + ' (Yes/No)\n', answer => {
-    interface.close();
+  const int = createInterface({ input: process.stdin, output: process.stdout });
+  const userResponse = await new Promise(res => int.question(question + ' (Yes/No)\n', answer => {
+    int.close();
     res(answer.toLocaleLowerCase());
   }));
   return assert(`Asked the User if this was correct (User said ${userResponse})`, userResponse === 'yes');
@@ -25,8 +27,11 @@ const assertToDo = (value/*: string*/) => {
   return assert('Use has not yet decided what a test for this value is', false);
 };
 
-module.exports = {
+const exported = {
   assertFromUser,
   assertToDo,
-  assertEqual,
+  assertEqual
 };
+
+export default exported;
+export { assertFromUser, assertToDo, assertEqual };

@@ -1,10 +1,11 @@
 // @flow strict
-const { Record } = require('immutable');
-const generateUUID = require('uuid/v4');
+import immutable from 'immutable';
+
+import generateUUID from 'uuid/v4.js';
 /*::
-import type { TypeID } from './type';
-import type { RelationshipID } from './relationship';
-import type { InstanceID } from './instance';
+import type { TypeID } from './type.js';
+import type { RelationshipID } from './relationship.js';
+import type { InstanceID } from './instance.js';
 
 export opaque type ConstraintID = string;
 // A constraint negates a 'polymorphic variant'
@@ -14,6 +15,7 @@ export type Constraint = {
   constrainedVariantId: TypeID,
 };
 */
+const { Record } = immutable;
 
 const createConstraint = (relationshipId/*: RelationshipID*/, constrainedVariantId/*: TypeID*/)/*: Constraint*/ => ({
   id: generateUUID(),
@@ -21,6 +23,9 @@ const createConstraint = (relationshipId/*: RelationshipID*/, constrainedVariant
   constrainedVariantId,
 });
 
-module.exports = {
-  createConstraint,
+const exported = {
+  createConstraint
 };
+
+export default exported;
+export { createConstraint };

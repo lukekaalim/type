@@ -1,14 +1,18 @@
 // @flow strict
-const { assert, colorReporter, unicodeReporter } = require('@lukekaalim/test');
-const { testJavascript } = require('./src/javascript.test');
-const { testRefinement } = require('./src/refinement.test');
-const { expectSource } = require('./src/javascript/source.test');
-const { expectFunction } = require('./src/javascript/values/function.test');
-const { writeFile } = require('fs').promises;
+import lktest from '@lukekaalim/test';
+const { assert, colorReporter, unicodeReporter } = lktest;
+
+import { testJavascript } from './src/javascript.test.js';
+import { testRefinement } from './src/refinement.test.js';
+import { expectSource } from './src/javascript/source.test.js';
+import { expectFunction } from './src/javascript/values/function.test.js';
+import { promises } from 'fs';
+
+const { writeFile } = promises;
 
 const test = async () => {
   try {
-    process.stdout.write('\033c')
+    process.stdout.write('\\033c')
     const assertion = assert('@lukekaalim/type should provide a safe typing language', [
       //await testJavascript(),
       await testRefinement(),

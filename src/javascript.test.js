@@ -1,15 +1,18 @@
 // @flow strict
-const { assert } = require('@lukekaalim/test');
-const { getProgramFromSource, createLumberState } = require('./javascript/parser');
-const { assertToDo } = require('./assertions.test');
-const { createFunctionAnnotation, createTypeAnnotation } = require('./javascript/annotation');
-const { createSimpleType } = require('./type');
-const { createSourceLocation } = require('./javascript/source');
-const { createTypeToken } = require('./javascript/token');
-const { createProgram, runProgram, createProgramState } = require('./program');
-const { Map } = require('immutable');
-const { Console } = require('console');
-const { inspect } = require('util');
+import test from '@lukekaalim/test';
+const { assert } = test;
+
+import { getProgramFromSource, createLumberState } from './javascript/parser.js';
+import { assertToDo } from './assertions.test.js';
+import { createFunctionAnnotation, createTypeAnnotation } from './javascript/annotation.js';
+import { createSimpleType } from './type.js';
+import { createSourceLocation } from './javascript/source.js';
+import { createTypeToken } from './javascript/token.js';
+import { createProgram, runProgram, createProgramState } from './program.js';
+import immutable from 'immutable';
+const { Map } = immutable;
+import { Console } from 'console';
+import { inspect } from 'util';
 
 const deepConsole = new Console({
   stdout: process.stdout,
@@ -96,6 +99,9 @@ const testJavascript = async () => {
   ]);
 };
 
-module.exports = {
-  testJavascript,
+const exported = {
+  testJavascript
 };
+
+export default exported;
+export { testJavascript };

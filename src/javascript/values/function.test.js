@@ -1,15 +1,17 @@
 // @flow strict
-const { assert } = require('@lukekaalim/test');
-const { Map } = require('immutable');
-const { parseArrowFunctionExpression } = require('./function');
-const { createLumberState } = require('../parser');
-const { createSourceLocation } = require('../source');
-const { createTypeToken } = require('../token');
-const { createEcmaScriptPrimitives } = require('../ecma');
+import test from '@lukekaalim/test';
+const { assert } = test;
 
-const { createFunctionAnnotation, createTypeAnnotation } = require('../annotation');
-const { assertToDo } = require('../../assertions.test');
-const { inspect } = require('util');
+import immutable from 'immutable';
+const { Map } = immutable;
+import { parseArrowFunctionExpression } from './function.js';
+import { createLumberState } from '../parser.js';
+import { createSourceLocation } from '../source.js';
+import { createTypeToken } from '../token.js';
+import { createEcmaScriptPrimitives } from '../ecma.js';
+import { createFunctionAnnotation, createTypeAnnotation } from '../annotation.js';
+import { assertToDo } from '../../assertions.test.js';
+import { inspect } from 'util';
 
 const expectFunction = () => {
   const primitives = createEcmaScriptPrimitives();
@@ -52,6 +54,9 @@ const expectFunction = () => {
   return assertToDo(inspect(parseArrowFunctionExpression(state, expression).toJS(), { color: true, depth: null }));
 };
 
-module.exports = {
-  expectFunction,
+const exported = {
+  expectFunction
 };
+
+export default exported;
+export { expectFunction };

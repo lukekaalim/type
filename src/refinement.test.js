@@ -1,18 +1,18 @@
 // @flow strict
-const { assert } = require('@lukekaalim/test');
-const { inspect } = require('util');
-const { List } = require('immutable');
-const { assertToDo } = require('./assertions.test');
+import test from '@lukekaalim/test';
+const { assert } = test;
 
-const { createRefinementsForTypeId } = require('./refinement');
-
-const { areTypesCompatible } = require('./compatibility');
-
-const { createProgramState } = require('./program');
-const { createSimpleType } = require('./type');
-const { createInstance } = require('./instance');
-const { createConstraint } = require('./constraint');
-const { createVariantRelationship, createIntersectionalRelationship } = require('./relationship');
+import { inspect } from 'util';
+import immutable from 'immutable';
+const { List } = immutable;
+import { assertToDo } from './assertions.test.js';
+import { createRefinementsForTypeId } from './refinement.js';
+import { areTypesCompatible } from './compatibility.js';
+import { createProgramState } from './program.js';
+import { createSimpleType } from './type.js';
+import { createInstance } from './instance.js';
+import { createConstraint } from './constraint.js';
+import { createVariantRelationship, createIntersectionalRelationship } from './relationship.js';
 
 const printConstraint = (typeNames, relationships) => ({ constrainedVariant, relationship }) => {
   const constrainedTypeName = typeNames.get(constrainedVariant) || '[unknown type]';
@@ -106,6 +106,9 @@ const testRefinement = () => {
   ]);
 };
 
-module.exports ={
-  testRefinement,
-}
+const exported = {
+  testRefinement
+};
+
+export default exported;
+export { testRefinement };

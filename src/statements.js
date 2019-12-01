@@ -1,12 +1,13 @@
 // @flow strict
-const generateUUID = require('uuid/v4');
-const { createProgram } = require('./program');
+import generateUUID from 'uuid/v4.js';
+
+import { createProgram } from './program.js';
 /*::
-import type { TypeID, Type } from './type';
-import type { Instance, InstanceID } from './instance';
-import type { TokenID } from './token';
-import type { Program } from './program';
-import type { Constraint } from './constraint';
+import type { TypeID, Type } from './type.js';
+import type { Instance, InstanceID } from './instance.js';
+import type { TokenID } from './token.js';
+import type { Program } from './program.js';
+import type { Constraint } from './constraint.js';
 import type { RecordOf } from 'immutable';
 
 export opaque type StatementID = string;
@@ -83,9 +84,12 @@ const branch = (
   elseProgram,
 });
 
-module.exports = {
+const exported = {
   createValue,
   constrain,
   exit,
-  branch,
+  branch
 };
+
+export default exported;
+export { createValue, constrain, exit, branch };

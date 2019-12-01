@@ -1,32 +1,34 @@
 // @flow strict
 /*::
-import type { Identifier, ValueToken, TypeToken } from './token';
-import type { TypeID } from '../type';
-import type { Program, ProgramState } from '../program';
-import type { InstanceID, Instance } from '../instance';
+import type { Identifier, ValueToken, TypeToken } from './token.js';
+import type { TypeID } from '../type.js';
+import type { Program, ProgramState } from '../program.js';
+import type { InstanceID, Instance } from '../instance.js';
 import type { RecordFactory, RecordOf } from 'immutable';
-import type { Statement } from '../statements';
-import type { FunctionSignature } from './signature';
-import type { JSValue, JSValueID } from './values';
-import type { SourceLocation } from './source';
-import type { ECMAScriptPrimitives } from './ecma';
-import type { AnnotationStatement } from './annotation';
+import type { Statement } from '../statements.js';
+import type { FunctionSignature } from './signature.js';
+import type { JSValue, JSValueID } from './values.js';
+import type { SourceLocation } from './source.js';
+import type { ECMAScriptPrimitives } from './ecma.js';
+import type { AnnotationStatement } from './annotation.js';
 */
-const { Record, Map, List } = require('immutable');
-const { parse } = require("acorn");
+import immutable from 'immutable';
+const { Record, Map, List } = immutable;
 
-const { createFunctionSignature } = require('./signature');
-const { createSourceLocation } = require('./source');
-const { createInstanceToken } = require('./token');
-const { createInstance } = require('../instance');
-const { createSimpleType } = require('../type');
-const { createProgram, runProgram, createProgramState } = require('../program');
-const { exit, createValue, constrain, branch } = require('../statements');
-const { createConstraint } = require('../constraint');
-const { createLiteralNumber, createLiteralBoolean } = require('./values');
-const { createEcmaScriptPrimitives } = require('./ecma');
-const { createVariantRelationship } = require('../relationship');
-const { parseArrowFunctionExpression } = require('./values/function');
+import acorn from 'acorn';
+const { parse } = acorn;
+import { createFunctionSignature } from './signature.js';
+import { createSourceLocation } from './source.js';
+import { createInstanceToken } from './token.js';
+import { createInstance } from '../instance.js';
+import { createSimpleType } from '../type.js';
+import { createProgram, runProgram, createProgramState } from '../program.js';
+import { exit, createValue, constrain, branch } from '../statements.js';
+import { createConstraint } from '../constraint.js';
+import { createLiteralNumber, createLiteralBoolean } from './values.js';
+import { createEcmaScriptPrimitives } from './ecma.js';
+import { createVariantRelationship } from '../relationship.js';
+import { parseArrowFunctionExpression } from './values/function.js';
 
 /*:: 
 export type LumberState = {
@@ -201,9 +203,12 @@ const getProgramFromSource = (
   return createStaticRelationships(statement(estree.body, initialState));
 };
 
-module.exports = {
+const exported = {
   createLumberState,
   getProgramFromSource,
   createStaticRelationships,
-  statement,
+  statement
 };
+
+export default exported;
+export { createLumberState, getProgramFromSource, createStaticRelationships, statement };

@@ -1,20 +1,22 @@
 // @flow strict
-const { getLineFromIndex } = require('../source');
-const { createSimpleType } = require('../../type');
-const { createInstance } = require('../../instance');
-const { createFunctionAnnotation } = require('../annotation');
-const { createSourceLocation } = require('../source');
-const { createInstanceToken } = require('../token');
-const { createStaticRelationships, statement } = require('../parser');
-const { runProgram, createProgram } = require('../../program');
-const { createValue } = require('../../statements');
-const { createFunctionSignature } = require('../signature');
-const { List } = require('immutable');
+import { getLineFromIndex } from '../source.js';
+
+import { createSimpleType } from '../../type.js';
+import { createInstance } from '../../instance.js';
+import { createFunctionAnnotation } from '../annotation.js';
+import { createSourceLocation } from '../source.js';
+import { createInstanceToken } from '../token.js';
+import { createStaticRelationships, statement } from '../parser.js';
+import { runProgram, createProgram } from '../../program.js';
+import { createValue } from '../../statements.js';
+import { createFunctionSignature } from '../signature.js';
+import immutable from 'immutable';
+const { List } = immutable;
 /*::
-import type { LumberState } from '../parser';
-import type { SourceLocation } from '../source';
-import type { FunctionExpressionAnnotation } from '../annotation';
-import type { TypeToken } from '../token';
+import type { LumberState } from '../parser.js';
+import type { SourceLocation } from '../source.js';
+import type { FunctionExpressionAnnotation } from '../annotation.js';
+import type { TypeToken } from '../token.js';
 import type { RecordOf } from 'immutable'
 */
 
@@ -81,6 +83,7 @@ const parseArrowFunctionExpression = (
     )
     .update('functionSignatures', allSignatures => allSignatures.merge(signatures))
 };
+
 /*
   const functionState = state
     //.update('staticValues', values => values.set(argument.id, argument))
@@ -109,6 +112,9 @@ const parseArrowFunctionExpression = (
 };
 */
 
-module.exports = {
-  parseArrowFunctionExpression,
+const exported = {
+  parseArrowFunctionExpression
 };
+
+export default exported;
+export { parseArrowFunctionExpression };

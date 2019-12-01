@@ -1,15 +1,16 @@
 // @flow strict
-const { UnknownTypeIDError } = require('./errors');
-const { createSimpleType, createImplementingType, createBranchingType } = require('./type');
-const { createConstraint } = require('./constraint');
-const { List } = require('immutable');
+import { UnknownTypeIDError } from './errors.js';
+
+import { createSimpleType } from './type.js';
+import { createConstraint } from './constraint.js';
+import immutable from 'immutable';
 /*::
-import type { Type, TypeID, ImplementingType } from './type';
-import type { InstanceID, Instance } from './instance';
-import type { ProgramState } from './program';
-import type { Constraint } from './constraint';
-import type { Token } from './token';
-import type { VariantRelationship } from './relationship';
+import type { Type, TypeID } from './type.js';
+import type { InstanceID, Instance } from './instance.js';
+import type { ProgramState } from './program.js';
+import type { Constraint } from './constraint.js';
+import type { Token } from './token.js';
+import type { VariantRelationship } from './relationship.js';
 
 import type { Map, RecordOf } from 'immutable';
 */
@@ -21,6 +22,7 @@ export type Refinement = {
   constraints: List<Constraint>,
 };
 */
+const { List } = immutable;
 
 const createRefinement = (constraints/*: List<Constraint>*/)/*: Refinement*/ => ({
   constraints,
@@ -71,6 +73,9 @@ const createRefinementsForTypeId = (state/*: RecordOf<ProgramState>*/, typeId/*:
   return refinements;
 };
 
-module.exports = {
-  createRefinementsForTypeId,
+const exported = {
+  createRefinementsForTypeId
 };
+
+export default exported;
+export { createRefinementsForTypeId };

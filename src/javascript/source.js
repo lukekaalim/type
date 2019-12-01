@@ -23,8 +23,11 @@ const getLinesFromLocation = (source/*: string*/, location/*: SourceLocation*/)/
   return [getLineFromIndex(source, location.start), getLineFromIndex(source, location.end)];
 };
 
-module.exports = {
+const exported = {
   createSourceLocation,
   getLineFromIndex,
-  getLinesFromLocation,
-}
+  getLinesFromLocation
+};
+
+export default exported;
+export { createSourceLocation, getLineFromIndex, getLinesFromLocation };

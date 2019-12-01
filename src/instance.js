@@ -1,8 +1,8 @@
 // @flow strict
-const generateUUID = require('uuid/v4');
+import generateUUID from 'uuid/v4.js';
 
 /*::
-import type { TypeID } from './type';
+import type { TypeID } from './type.js';
 
 export type InstanceID = string;
 export type Instance = {
@@ -16,6 +16,9 @@ const createInstance = (typeId/*: TypeID*/)/*: Instance*/ => ({
   typeId,
 });
 
-module.exports = {
-  createInstance,
+const exported = {
+  createInstance
 };
+
+export default exported;
+export { createInstance };

@@ -1,15 +1,17 @@
 // @flow strict
-const { Map, Record, List } = require('immutable');
-const { areTypesCompatible } = require('./compatibility');
-const { UnimplementedError } = require('./errors');
-const { createRefinementsForTypeId } = require('./refinement');
+import immutable from 'immutable';
+const { Map, Record, List } = immutable;
+
+import { areTypesCompatible } from './compatibility.js';
+import { UnimplementedError } from './errors.js';
+import { createRefinementsForTypeId } from './refinement.js';
 /*::
-import type { Statement } from './statements';
-import type { TypeID, Type } from './type';
-import type { TokenID, Token } from './token';
-import type { Constraint } from './constraint';
-import type { InstanceID, Instance } from './instance';
-import type { VariantRelationship, VariantRelationshipID, IntersectionRelationshipID, IntersectionRelationship } from './relationship';
+import type { Statement } from './statements.js';
+import type { TypeID, Type } from './type.js';
+import type { TokenID, Token } from './token.js';
+import type { Constraint } from './constraint.js';
+import type { InstanceID, Instance } from './instance.js';
+import type { VariantRelationship, VariantRelationshipID, IntersectionRelationshipID, IntersectionRelationship } from './relationship.js';
 
 import type { RecordOf, RecordFactory } from 'immutable';
 
@@ -86,8 +88,11 @@ const reduceState = (state/*: RecordOf<ProgramState>*/, statement) => {
   }
 };
 
-module.exports = {
+const exported = {
   createProgram,
   createProgramState,
-  runProgram,
+  runProgram
 };
+
+export default exported;
+export { createProgram, createProgramState, runProgram };

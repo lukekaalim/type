@@ -12,7 +12,10 @@ class UnknownTypeIDError extends Error {
   }
 }
 
-module.exports = {
+const exported = {
   UnimplementedError,
-  UnknownTypeIDError,
+  UnknownTypeIDError
 };
+
+export default exported;
+export { UnimplementedError, UnknownTypeIDError };

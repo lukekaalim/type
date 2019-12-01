@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "Small perfomant comment-based typesystem for javascript",
   "main": "src/index",
+  "type": "module",
   "dependencies": {
     "acorn": "^7.1.0",
     "immutable": "^4.0.0-rc.12",

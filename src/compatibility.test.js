@@ -1,8 +1,9 @@
 // @flow strict
-const { createSimpleType, createImplementingType, createBranchingType } = require('./type');
-const { areTypesCompatible } = require('./compatibility');
-const { performance } = require('perf_hooks');
-const { createState } = require('./program');
+import { createSimpleType, createImplementingType, createBranchingType } from './type.js';
+
+import { areTypesCompatible } from './compatibility.js';
+import { performance } from 'perf_hooks.js';
+import { createState } from './program.js';
 
 const testBranchingType = () => {
   const typeA = createSimpleType();

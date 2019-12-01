@@ -1,9 +1,9 @@
 // @flow strict
-const generateUUID = require('uuid/v4');
+import generateUUID from 'uuid/v4.js';
 
 /*::
-import type { TypeID } from './type';
-import type { InstanceID } from './instance';
+import type { TypeID } from './type.js';
+import type { InstanceID } from './instance.js';
 
 export opaque type TokenID: string = string;
 type TypeToken = {
@@ -37,7 +37,10 @@ const createInstanceToken = (identifier/*: string*/, instanceId/*: InstanceID*/)
   type: 'instance-token',
 });
 
-module.exports = {
+const exported = {
   createTypeToken,
-  createInstanceToken,
+  createInstanceToken
 };
+
+export default exported;
+export { createTypeToken, createInstanceToken };
