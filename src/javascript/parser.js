@@ -26,9 +26,10 @@ import { createProgram, runProgram, createProgramState } from '../program.js';
 import { exit, createValue, constrain, branch } from '../statements.js';
 import { createConstraint } from '../constraint.js';
 import { createLiteralNumber, createLiteralBoolean } from './values.js';
-import { createEcmaScriptPrimitives } from './ecma.js';
+import { createEcmaScriptPrimitives, createTypeTokensForPrimitives } from './ecma.js';
 import { createVariantRelationship } from '../relationship.js';
 import { parseArrowFunctionExpression } from './values/function.js';
+import { createAnnotationFromString } from './annotationParser.js';
 
 /*:: 
 export type LumberState = {
@@ -51,13 +52,15 @@ export type LumberState = {
 };
 */
 
+const initialPrimitives = createEcmaScriptPrimitives();
+
 const createLumberState/*: RecordFactory<LumberState>*/ = Record({
   sourceCode: '',
   annotations: Map(),
-  primitives: createEcmaScriptPrimitives(),
+  primitives: initialPrimitives,
 
   valueTokens: Map(),
-  typeTokens: Map(),
+  typeTokens: Map().merge(createTypeTokensForPrimitives(initialPrimitives)),
   functionSignatures: List(),
   initialSawmillState: createProgramState(),
 
@@ -134,6 +137,8 @@ const returnDeclaration = (state, returnNode) => {
 
 const ifStatement = (state, node) => {
   const testValueToken = state.valueTokens.get(node.test.name);
+  console.log(node.test);
+  console.log(state.valueTokens.toJS());
   if (!testValueToken)
     throw new Error();
   const trueValue = getLiteralValue(state, true);
@@ -199,8 +204,17 @@ const getProgramFromSource = (
   source/*: string*/,
   initialState/*: RecordOf<LumberState>*/ = createLumberState()
 ) => {
-  const estree = parse(source);
-  return createStaticRelationships(statement(estree.body, initialState));
+  const commentAnnotations = [];
+  const onComment = (isBlock, content, start, end) => {
+    commentAnnotations.push([createSourceLocation(start, end), createAnnotationFromString(content)]);
+  };
+  const estree = parse(source, { onComment });
+  const stateWithAnnotations = initialState
+    .update('annotations', annotations => annotations.merge(commentAnnotations));
+  const stateWithSource = stateWithAnnotations
+    .set('sourceCode', source);
+
+  return createStaticRelationships(statement(estree.body, stateWithSource));
 };
 
 const exported = {

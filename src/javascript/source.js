@@ -1,7 +1,10 @@
 // @flow strict
+import generateUUID from 'uuid/v4.js';
 
 /*::
+export type SourceLocationID = string;
 export type SourceLocation = {
+  id: SourceLocationID,
   start: number,
   end: number,
 };
@@ -10,6 +13,7 @@ export type SourceLocation = {
 const createSourceLocation = (start/*: number*/, end/*: number*/)/*: SourceLocation*/ => ({
   start,
   end,
+  id: generateUUID(),
 });
 
 const getLineFromIndex = (source/*: string*/, charIndex/*: number*/)/*: number*/ => {

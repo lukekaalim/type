@@ -51,7 +51,9 @@ const expectFunction = () => {
       body: [],
     },
   };
-  return assertToDo(inspect(parseArrowFunctionExpression(state, expression).toJS(), { color: true, depth: null }));
+  const finalState = parseArrowFunctionExpression(state, expression);
+  const signatureCount = finalState.functionSignatures.size;
+  return assert('Function should generate a signature with a matching type', signatureCount === 1);
 };
 
 const exported = {

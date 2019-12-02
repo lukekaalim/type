@@ -14,7 +14,7 @@ const testType = async () => {
   try {
     process.stdout.write('\u001bc')
     const assertion = assert('@lukekaalim/type should provide a safe typing language', [
-      //await testJavascript(),
+      await testJavascript(),
       await testRefinement(),
       await expectSource(),
       await expectFunction(),

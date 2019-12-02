@@ -23,7 +23,7 @@ const deepConsole = new Console({
 
 const testParser = async () => {
   const source = `
-  // (boolean)
+  // { "type": "function-expression", "parameters": [{ "type": "type-identifier", "identifier": "boolean" }], "returns": null, "throws": null }
   const main = (a) => {
     if (a) {
       return 69;
@@ -34,63 +34,19 @@ const testParser = async () => {
   const alphaType = createSimpleType();
   const alphaToken = createTypeToken('Alpha', alphaType.id)
 
-  const parameterAnnotation = createTypeAnnotation(alphaToken.id);
-  const mainAnnotation = createFunctionAnnotation(createSourceLocation(0, 16), [parameterAnnotation.id]);
-
   const numberType = createSimpleType();
   const numberToken = createTypeToken('number', numberType.id);
 
   const undefinedType = createSimpleType();
   const undefinedToken = createTypeToken('undefined', undefinedType.id);
 
-  const initialLumberState = createLumberState({
-    annotations: Map([
-      [parameterAnnotation.id, parameterAnnotation],
-      [mainAnnotation.id, mainAnnotation],
-    ]),
-    typeTokens: Map([
-      [alphaToken.identifier, alphaToken],
-      [numberToken.identifier, numberToken],
-      [undefinedToken.identifier, undefinedToken]
-    ]),
-    initialSawmillState: createProgramState({
-      types: Map([
-        [alphaType.id, alphaType],
-        [numberType.id, numberType],
-        [undefinedType.id, undefinedType],
-      ]),
-    })
-  });
+  const initialLumberState = createLumberState();
 
   const finalLumberState = getProgramFromSource(source, initialLumberState);
   const finalSawmillStates = runProgram(createProgram({ statements: finalLumberState.statements }), finalLumberState.initialSawmillState);
 
-  const mainToken = finalLumberState.valueTokens.get('main');
-  const get = /*:: <T>*/(x/*: ?T*/)/*: T*/ => {
-    if (!x)
-      throw new Error();
-    return x;
-  }
-  deepConsole.log(finalLumberState.toJS())
-  for (const state of finalSawmillStates) {
-    deepConsole.log(state.toJS());
-    const getIdentifierOfTypeID = typeId => finalLumberState.typeTokens.find(token => token.typeId === typeId).identifier;
-    const getTypeIDOfIdentifier = identifier => finalLumberState.typeTokens.find(token => token.identifier === identifier, null).typeId;
-    const getValueIDOfIdentifier = identifier => finalLumberState.valueTokens.find(token => token.identifier === identifier, null).valueId;
-    const getTypeOfValueID = valueId => get(state.values.get(valueId)).typeId;
-    const getSigOfFunction = typeId => get(finalLumberState.functionSignatures.find(x => x.typeId === typeId));
-    const getStaticValueOfType = typeId => finalLumberState.staticValues.find(x => x.valueType.id === typeId);
-  
-    const valueId = getValueIDOfIdentifier('main')
-    const typeId = getTypeOfValueID(valueId);
-    const sig = getSigOfFunction(typeId);
-    const returnValue = getStaticValueOfType(sig.returnType);
-
-    deepConsole.log([...sig.argumentTypes.values()]);
-    deepConsole.log(returnValue);
-  }
-
-  return assertToDo('todo');
+  deepConsole.log(finalLumberState.toJS());
+  return assertToDo(inspect(finalLumberState.valueTokens.toJS(), { colors: true, depth: null }));
 };
 
 const testJavascript = async () => {

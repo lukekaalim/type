@@ -1,8 +1,11 @@
 // @flow strict
 /*::
 import type { Type, TypeID } from '../type.js';
+import type { TypeToken } from './token.js';
 */
 import { createSimpleType } from '../type.js';
+import { createTypeToken } from './token.js';
+import immutable from 'immutable';
 
 /*::
 type ECMAScriptPrimitives = {
@@ -15,6 +18,18 @@ type ECMAScriptPrimitives = {
   null: Type,
 };
 */
+
+const createTypeTokensForPrimitives = (primitives/*: ECMAScriptPrimitives*/)/*: immutable.Map<string, TypeToken>*/ => {
+  return immutable.Map([
+    ['number', createTypeToken('number', primitives.number.id)],
+    ['boolean', createTypeToken('boolean', primitives.boolean.id)],
+    ['string', createTypeToken('string', primitives.string.id)],
+    ['function', createTypeToken('function', primitives.function.id)],
+    ['object', createTypeToken('object', primitives.object.id)],
+    ['undefined', createTypeToken('undefined', primitives.undefined.id)],
+    ['null', createTypeToken('null', primitives.null.id)],
+  ]);
+};
 
 const createEcmaScriptPrimitives = ()/*: ECMAScriptPrimitives*/ => {
   const numberType = createSimpleType();
@@ -47,4 +62,4 @@ export type {
 */
 
 export default exported;
-export { createEcmaScriptPrimitives };
+export { createEcmaScriptPrimitives, createTypeTokensForPrimitives };

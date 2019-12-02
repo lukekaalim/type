@@ -1,5 +1,6 @@
 // @flow strict
 import { getLineFromIndex } from '../source.js';
+import generateUUID from 'uuid/v4.js';
 
 import { createSimpleType } from '../../type.js';
 import { createInstance } from '../../instance.js';
@@ -11,13 +12,16 @@ import { runProgram, createProgram } from '../../program.js';
 import { createValue } from '../../statements.js';
 import { createFunctionSignature } from '../signature.js';
 import immutable from 'immutable';
-const { List } = immutable;
+const { List, Map } = immutable;
 /*::
 import type { LumberState } from '../parser.js';
 import type { SourceLocation } from '../source.js';
 import type { FunctionExpressionAnnotation } from '../annotation.js';
 import type { TypeToken } from '../token.js';
 import type { RecordOf } from 'immutable'
+import type { JSValue, JSValueID } from '../values';
+import type { Program } from '../../program';
+import type { FunctionSignature } from '../signature';
 */
 
 const findAnnotation = (state, arrowFunctionExpression) => {
@@ -29,18 +33,24 @@ const findAnnotation = (state, arrowFunctionExpression) => {
   );
 };
 
-const parseArrowFunctionExpression = (
-  state/*: RecordOf<LumberState>*/,
-  arrowFunctionExpression/*: EstreeArrowFunctionExpression*/,
-  annotation/*: FunctionExpressionAnnotation*/ = findAnnotation(state, arrowFunctionExpression)
-) => {
-  const type = createSimpleType();
-  const instance = createInstance(type.id);
+/*::
+type JsFunctionID = string;
+type JsFunction = {
+  id: JsFunctionID,
+  type: 'function',
+  values: Map<JSValueID, JSValue>,
+  signatures: FunctionSignature[],
+  program: RecordOf<Program>,
+};
 
-  // should get arguments here, and feed them to the function state
-  // as well as resetting the return & throw states
+export type {
+  JsFunction,
+  JsFunctionID,
+};
+*/
 
-  const paramsAnnotation/*: TypeToken[]*/ = annotation.parameters
+const createParamValues = (state, parametersAnnotations) => {
+  const paramsAnnotation = parametersAnnotations
     .map(annotation => {
       switch (annotation.type) {
         case 'value-literal':
@@ -50,12 +60,23 @@ const parseArrowFunctionExpression = (
         case 'type-identifier':
           const token = state.typeTokens.get(annotation.identifier);
           if (!token)
-            throw new Error('Err');
+            throw new Error();
           return token;
       }
     });
 
-  const paramInstances = paramsAnnotation.map(token =>  createInstance(token.typeId));
+  return paramsAnnotation.map(token =>  createInstance(token.typeId));
+};
+
+const parseArrowFunctionExpression = (
+  state/*: RecordOf<LumberState>*/,
+  arrowFunctionExpression/*: EstreeArrowFunctionExpression*/,
+  annotation/*: FunctionExpressionAnnotation*/ = findAnnotation(state, arrowFunctionExpression)
+)/*: JsFunction*/ => {
+  const type = createSimpleType();
+  const instance = createInstance(type.id);
+
+  const paramInstances = createParamValues(state, annotation.parameters);
   const valueTokens = paramInstances.map((instance, index) =>
     createInstanceToken(arrowFunctionExpression.params[index].name, instance.id)
   );
@@ -65,56 +86,21 @@ const parseArrowFunctionExpression = (
     .update('valueTokens', tokens => tokens.merge(valueTokens.map(vt => [vt.identifier, vt])))
     .set('argumentValuesIds', List(paramInstances.map(p => p.id)))
 
-
   const functionFinalState = createStaticRelationships(statement(arrowFunctionExpression.body.body, functionInitialState));
+  const { staticValues: values } = functionFinalState;
 
   const program = createProgram({ statements: functionFinalState.statements, initialState: functionFinalState.initialSawmillState });
   const sawmillStates = runProgram(program, functionFinalState.initialSawmillState);
 
   const signatures = sawmillStates.map(s => createFunctionSignature(functionFinalState, s));
 
-  return state
-    .update('staticValues', staticValues => staticValues.merge(functionFinalState.staticValues))
-    .update('statements', statements => statements
-      .push(createValue(instance))
-    ) 
-    .update('initialSawmillState', sawmill => sawmill
-      .update('types', sawmillTypes => sawmillTypes.set(type.id, type))
-    )
-    .update('functionSignatures', allSignatures => allSignatures.merge(signatures))
+  return {
+    id: generateUUID(),
+    type: 'function',
+    values,
+    signatures,
+    program,
+  };
 };
 
-/*
-  const functionState = state
-    //.update('staticValues', values => values.set(argument.id, argument))
-    .update('valueTokens', tokens => tokens.set('a', createInstanceToken('a', argumentValue.id)))
-    .update('statements', statements => statements
-      .push(createValue(argumentValue))
-    );
-
-  const lumberState = createStaticRelationships(statement(initFunction.body.body, functionState));
-
-  const program = createProgram({ statements: lumberState.statements });
-  const sawmillState = runProgram(program, lumberState.initialSawmillState);
-
-  const signatures = createFunctionSignatures(type.id, lumberState, sawmillState, argumentValue);
-
-  return state
-    .update('staticValues', staticValues => staticValues.merge(lumberState.staticValues))
-    .update('statements', statements => statements
-      .push(createValue(instance))
-    ) 
-    .update('initialSawmillState', sawmill => sawmill
-      .update('types', sawmillTypes => sawmillTypes.set(type.id, type))
-    )
-    .update('functionSignatures', allSignatures => allSignatures.merge(signatures))
-    .update('valueTokens', valueTokens => valueTokens.set(token.identifier, token))
-};
-*/
-
-const exported = {
-  parseArrowFunctionExpression
-};
-
-export default exported;
 export { parseArrowFunctionExpression };
