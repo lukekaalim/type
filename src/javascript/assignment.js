@@ -19,10 +19,13 @@ const parseExpression = (state, expression) => {
 const parseConstantDeclarator = (state, assignmentDeclarator) => {
   const identifier = createIdentifier(assignmentDeclarator.id.name);
   const expressionResult = parseExpression(state, assignmentDeclarator.init);
+
+  return state
+    .update('values', values => values.update('functions', functions => functions.set(expressionResult.id, expressionResult)));
 };
 
 const parseConstantDeclaration = (state, assignmentStatement) => {
-  assignmentStatement.declarations.map(declaration => parseConstantDeclarator(state, declaration));
+  assignmentStatement.declarations.reduce((nextState, declaration) => parseConstantDeclarator(nextState, declaration), state);
 };
 
 const parseVariableDeclaration = (state/*: RecordOf<LumberState>*/, assignmentStatement/*: EstreeVariableDeclaration*/) => {

@@ -45,10 +45,6 @@ const createInstanceToken = (
   type: 'value-token',
 });
 
-const findIdentifier = () => {
-
-};
-
 const exported = {
   createTypeToken,
   createInstanceToken
