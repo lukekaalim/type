@@ -5,7 +5,7 @@ const { assert, colorReporter, unicodeReporter } = lktest;
 import { testJavascript } from './src/javascript.test.js';
 import { testRefinement } from './src/refinement.test.js';
 import { expectSource } from './src/javascript/source.test.js';
-import { expectFunction } from './src/javascript/values/function.test.js';
+import { expectFunction } from './src/javascript/jsValues/function.test.js';
 import { promises } from 'fs';
 
 const { writeFile } = promises;

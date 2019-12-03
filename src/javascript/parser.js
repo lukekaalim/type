@@ -7,10 +7,10 @@ import type { InstanceID, Instance } from '../instance.js';
 import type { RecordFactory, RecordOf } from 'immutable';
 import type { Statement } from '../statements.js';
 import type { FunctionSignature } from './signature.js';
-import type { JSValue, JSValueID } from './values.js';
 import type { SourceLocation } from './source.js';
 import type { ECMAScriptPrimitives } from './ecma.js';
 import type { AnnotationStatement } from './annotation.js';
+import type { JSValues } from './values.js';
 */
 import immutable from 'immutable';
 const { Record, Map, List } = immutable;
@@ -25,10 +25,10 @@ import { createSimpleType } from '../type.js';
 import { createProgram, runProgram, createProgramState } from '../program.js';
 import { exit, createValue, constrain, branch } from '../statements.js';
 import { createConstraint } from '../constraint.js';
-import { createLiteralNumber, createLiteralBoolean } from './values.js';
+import { generateTypesForValues, generateRelationshipsForTypes, createJsValues } from './values.js';
 import { createEcmaScriptPrimitives, createTypeTokensForPrimitives } from './ecma.js';
 import { createVariantRelationship } from '../relationship.js';
-import { parseArrowFunctionExpression } from './values/function.js';
+import { parseArrowFunctionExpression } from './jsValues/function.js';
 import { createAnnotationFromString } from './annotationParser.js';
 
 /*:: 
@@ -41,11 +41,13 @@ export type LumberState = {
   valueTokens: Map<string, ValueToken>,
   typeTokens: Map<string, TypeToken>,
   functionSignatures: List<FunctionSignature>,
-  initialSawmillState: RecordOf<ProgramState>,
   // sawmill program generation
+  // (this should just be a program);
+  initialSawmillState: RecordOf<ProgramState>,
   statements: List<Statement>,
-  staticValues: Map<JSValueID, JSValue>,
-  // signature generation
+
+  values: RecordOf<JSValues>,
+  // signature generation (this should be abstracted)
   returnValueId: null | InstanceID,
   throwValueId: null | InstanceID,
   argumentValuesIds: List<InstanceID>,
@@ -65,7 +67,7 @@ const createLumberState/*: RecordFactory<LumberState>*/ = Record({
   initialSawmillState: createProgramState(),
 
   statements: List(),
-  staticValues: Map(),
+  values: createJsValues(),
 
   returnValueId: null,
   throwValueId: null,
@@ -77,7 +79,9 @@ const variableDeclarator = (state, declarator) => {
     default:
       return state;
     case 'ArrowFunctionExpression':
-      return parseArrowFunctionExpression(state, declarator.init);
+      const jsFunction = parseArrowFunctionExpression(state, declarator.init);
+      console.log(jsFunction.signatures);
+      return state;
   }
 };
 
@@ -177,26 +181,13 @@ const createNumericRelationship = (state, literalNumberValue) => {
 };
 
 const createStaticRelationships = (state/*: RecordOf<LumberState>*/) => {
-  const booleans = [createSimpleType()];
-  for (const value of state.staticValues.values())
-    value.type === 'literal-boolean' && booleans.push(value.valueType);
-  
-  return state.staticValues.reduce((state, value) => {
-    switch (value.type) {
-      case 'literal-number':
-        return createNumericRelationship(state, value);
-      default:
-        return state;
-    }
-  }, state)
-    .update('initialSawmillState', initialSawmillState => initialSawmillState
-      .update('types', types => types
-        .merge(booleans.map(v => [v.id, v]))
-        .set(state.primitives.boolean.id, state.primitives.boolean)
-      )
-      .update('variantRelationships', relationships => relationships
-        .push(createVariantRelationship(state.primitives.boolean.id, booleans.map(value => value.id)))
-      )
+  const types = generateTypesForValues(state.values);
+  const relationships = generateRelationshipsForTypes(state.primitives, state.values);
+
+  return state
+    .update('initialSawmillState', sawmill => sawmill
+      .update('types', sawmillTypes => sawmillTypes.merge(types.map(type => [type.id, type])))
+      .update('variantRelationships', sawmillRelationships => sawmillRelationships.merge(relationships))
     );
 };
 

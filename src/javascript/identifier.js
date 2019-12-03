@@ -1,9 +1,19 @@
 // @flow strict
+import generateUUID from 'uuid/v4';
 
 /*::
-opaque type IdentifierID = string;
-type Identifier = {
+export opaque type IdentifierID = string;
+export type Identifier = {
   id: IdentifierID,
-  identifier: string,
+  value: string,
 };
 */
+
+const createIdentifier = (value/*: string*/)/*: Identifier*/ => ({
+  id: generateUUID(),
+  value,
+});
+
+export {
+  createIdentifier,
+};

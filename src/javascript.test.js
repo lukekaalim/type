@@ -26,9 +26,9 @@ const testParser = async () => {
   // { "type": "function-expression", "parameters": [{ "type": "type-identifier", "identifier": "boolean" }], "returns": null, "throws": null }
   const main = (a) => {
     if (a) {
-      return 69;
+      return 70;
     }
-    return 400;
+    return 420;
   };
   `;
   const alphaType = createSimpleType();

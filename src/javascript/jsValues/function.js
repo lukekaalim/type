@@ -1,7 +1,9 @@
 // @flow strict
-import { getLineFromIndex } from '../source.js';
 import generateUUID from 'uuid/v4.js';
+import immutable from 'immutable';
+const { List, Map } = immutable;
 
+import { getLineFromIndex } from '../source.js';
 import { createSimpleType } from '../../type.js';
 import { createInstance } from '../../instance.js';
 import { createFunctionAnnotation } from '../annotation.js';
@@ -11,17 +13,18 @@ import { createStaticRelationships, statement } from '../parser.js';
 import { runProgram, createProgram } from '../../program.js';
 import { createValue } from '../../statements.js';
 import { createFunctionSignature } from '../signature.js';
-import immutable from 'immutable';
-const { List, Map } = immutable;
+import { createVariantRelationship } from '../../relationship.js';
 /*::
 import type { LumberState } from '../parser.js';
+import type { Type, TypeID } from '../../type.js';
 import type { SourceLocation } from '../source.js';
 import type { FunctionExpressionAnnotation } from '../annotation.js';
 import type { TypeToken } from '../token.js';
-import type { RecordOf } from 'immutable'
-import type { JSValue, JSValueID } from '../values';
+import type { RecordOf } from 'immutable';
+import type { JSValues } from '../values';
 import type { Program } from '../../program';
 import type { FunctionSignature } from '../signature';
+import type { Relationship } from '../../relationship';
 */
 
 const findAnnotation = (state, arrowFunctionExpression) => {
@@ -34,18 +37,18 @@ const findAnnotation = (state, arrowFunctionExpression) => {
 };
 
 /*::
-type JsFunctionID = string;
-type JsFunction = {
-  id: JsFunctionID,
-  type: 'function',
-  values: Map<JSValueID, JSValue>,
+type JSFunctionID = string;
+type JSFunction = {
+  id: JSFunctionID,
+  type: Type,
+  values: RecordOf<JSValues>,
   signatures: FunctionSignature[],
   program: RecordOf<Program>,
 };
 
 export type {
-  JsFunction,
-  JsFunctionID,
+  JSFunction,
+  JSFunctionID,
 };
 */
 
@@ -72,7 +75,7 @@ const parseArrowFunctionExpression = (
   state/*: RecordOf<LumberState>*/,
   arrowFunctionExpression/*: EstreeArrowFunctionExpression*/,
   annotation/*: FunctionExpressionAnnotation*/ = findAnnotation(state, arrowFunctionExpression)
-)/*: JsFunction*/ => {
+)/*: JSFunction*/ => {
   const type = createSimpleType();
   const instance = createInstance(type.id);
 
@@ -87,20 +90,29 @@ const parseArrowFunctionExpression = (
     .set('argumentValuesIds', List(paramInstances.map(p => p.id)))
 
   const functionFinalState = createStaticRelationships(statement(arrowFunctionExpression.body.body, functionInitialState));
-  const { staticValues: values } = functionFinalState;
+  const { values, statements, initialSawmillState } = functionFinalState;
 
-  const program = createProgram({ statements: functionFinalState.statements, initialState: functionFinalState.initialSawmillState });
-  const sawmillStates = runProgram(program, functionFinalState.initialSawmillState);
+  const program = createProgram({ statements, initialState: initialSawmillState });
+  const sawmillStates = runProgram(program, initialSawmillState);
 
   const signatures = sawmillStates.map(s => createFunctionSignature(functionFinalState, s));
 
   return {
     id: generateUUID(),
-    type: 'function',
+    type,
     values,
     signatures,
     program,
   };
 };
 
-export { parseArrowFunctionExpression };
+const generateRelationshipsForFunctions = (functionTypeId/*: TypeID*/, functions/*: List<JSFunction>*/) => {
+  return [createVariantRelationship(functionTypeId, functions.map(func => func.type.id).toArray())];
+};
+
+const generateTypesForFunctions = (functions/*: List<JSFunction>*/) => {
+  return functions
+    .map(func => func.type);
+};
+
+export { parseArrowFunctionExpression, generateRelationshipsForFunctions, generateTypesForFunctions };
