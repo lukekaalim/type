@@ -9,18 +9,13 @@ import type { JSBooleanID } from './jsValues/boolean';
 export opaque type IdentifierID = string;
 export type Identifier = {
   id: IdentifierID,
-  value: string,
+  name: string,
 };
-
-export type IdentifierAssignment =
-  | { identifierID: IdentifierID, type: 'function', functionId: JSFunctionID }
-  | { identifierID: IdentifierID, type: 'number', functionId: JSNumberID }
-  | { identifierID: IdentifierID, type: 'boolean', functionId: JSBooleanID }
 */
 
-const createIdentifier = (value/*: string*/)/*: Identifier*/ => ({
+const createIdentifier = (name/*: string*/)/*: Identifier*/ => ({
   id: generateUUID(),
-  value,
+  name,
 });
 
 export {

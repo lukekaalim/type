@@ -2,9 +2,33 @@
 /*::
 import type { LumberState } from './parser';
 import type { RecordOf } from 'immutable';
+import type { JSFunctionID } from './jsValues/function';
+import type { IdentifierID } from './identifier';
 */
 import { createIdentifier } from './identifier';
 import { parseArrowFunctionExpression } from './jsValues/function';
+
+/*::
+type AssignmentID = string;
+
+type FunctionAssignment = {
+  id: AssignmentID,
+  identifierId: IdentifierID,
+  type: 'function',
+  functionId: JSFunctionID,
+};
+
+type ValueAssignment =
+  | FunctionAssignment
+  
+type Assignment =
+  | ValueAssignment;
+
+export type {
+  AssignmentID,
+  Assignment,
+};
+*/
 
 // TODO: Refactor
 const parseExpression = (state, expression) => {
@@ -19,13 +43,11 @@ const parseExpression = (state, expression) => {
 const parseConstantDeclarator = (state, assignmentDeclarator) => {
   const identifier = createIdentifier(assignmentDeclarator.id.name);
   const expressionResult = parseExpression(state, assignmentDeclarator.init);
-
-  return state
-    .update('values', values => values.update('functions', functions => functions.set(expressionResult.id, expressionResult)));
 };
 
 const parseConstantDeclaration = (state, assignmentStatement) => {
-  assignmentStatement.declarations.reduce((nextState, declaration) => parseConstantDeclarator(nextState, declaration), state);
+  assignmentStatement.declarations.map(declaration => parseConstantDeclarator(state, declaration));
+  return state;
 };
 
 const parseVariableDeclaration = (state/*: RecordOf<LumberState>*/, assignmentStatement/*: EstreeVariableDeclaration*/) => {

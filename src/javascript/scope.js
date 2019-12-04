@@ -1,14 +1,31 @@
 // @flow strict
+import immutable from 'immutable';
+const { Record, Map } = immutable;
 /*::
 import type { Identifier, IdentifierID } from './identifier';
-import type { List, Map } from 'immutable';
+import type { List, RecordOf, RecordFactory } from 'immutable';
+import type { AssignmentID } from './assignment';
 */
 /*::
 type ScopeID = string;
-type Scope = {
+type _scope = {
   id: ScopeID,
-  identifiers: Map<IdentifierID, Identifier>,
-  identifiersByValue: Map<string, IdentifierID>,
-  parentScope: ScopeID,
+  assignments: Map<IdentifierID, AssignmentID>,
+  closure: ScopeID,
+};
+
+type Scope = RecordOf<_scope>;
+
+export type {
+  ScopeID,
+  Scope,
 };
 */
+
+const createScope/*: RecordFactory<_scope>*/ = Record({
+
+});
+
+export {
+  createScope,
+};
