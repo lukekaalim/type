@@ -20,7 +20,7 @@ type FunctionAssignment = {
 
 type ValueAssignment =
   | FunctionAssignment
-  
+
 type Assignment =
   | ValueAssignment;
 

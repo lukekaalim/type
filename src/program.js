@@ -6,7 +6,7 @@ import { areTypesCompatible } from './compatibility.js';
 import { UnimplementedError } from './errors.js';
 import { createRefinementsForTypeId } from './refinement.js';
 /*::
-import type { Statement } from './statements.js';
+import type { Statement, StatementID } from './statements.js';
 import type { TypeID, Type } from './type.js';
 import type { TokenID, Token } from './token.js';
 import type { Constraint } from './constraint.js';
@@ -19,6 +19,7 @@ export opaque type ProgramID = string;
 export type Program = {
   id: ProgramID,
   statements: List<Statement>,
+  executionOrder: List<StatementID>,
   initialState: RecordOf<ProgramState>,
 };
 
