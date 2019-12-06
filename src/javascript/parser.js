@@ -1,6 +1,6 @@
 // @flow strict
 /*::
-import type { Identifier, ValueToken, TypeToken } from './token.js';
+import type { ValueToken, TypeToken } from './token.js';
 import type { TypeID } from '../type.js';
 import type { Program, ProgramState } from '../program.js';
 import type { InstanceID, Instance } from '../instance.js';
@@ -11,6 +11,7 @@ import type { SourceLocation } from './source.js';
 import type { ECMAScriptPrimitives } from './ecma.js';
 import type { AnnotationStatement } from './annotation.js';
 import type { JSValues } from './values.js';
+import type { ScopeID, Scope, IdentifierID, Identifier } from '../javascript';
 */
 import immutable from 'immutable';
 const { Record, Map, List } = immutable;
@@ -41,6 +42,8 @@ export type LumberState = {
   valueTokens: Map<string, ValueToken>,
   typeTokens: Map<string, TypeToken>,
   functionSignatures: List<FunctionSignature>,
+  scopes: Map<ScopeID, Scope>,
+  identifiers: Map<IdentifierID, Identifier>,
   // sawmill program generation
   // (this should just be a program);
   initialSawmillState: RecordOf<ProgramState>,
@@ -64,6 +67,10 @@ const createLumberState/*: RecordFactory<LumberState>*/ = Record({
   valueTokens: Map(),
   typeTokens: Map().merge(createTypeTokensForPrimitives(initialPrimitives)),
   functionSignatures: List(),
+
+  scopes: Map(),
+  identifers: Map(),
+
   initialSawmillState: createProgramState(),
 
   statements: List(),

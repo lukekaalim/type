@@ -4,11 +4,18 @@ import generateUUID from 'uuid/v4.js';
 /*::
 import type { TypeID } from './type.js';
 
-export type InstanceID = string;
-export type Instance = {
+type InstanceID = string;
+type Instance = {
   id: InstanceID,
   typeId: TypeID,
 };
+
+export type {
+  InstanceID,
+  Instance,
+  InstanceID as ValueID,
+  Instance as Value,
+}
 */
 
 const createInstance = (typeId/*: TypeID*/)/*: Instance*/ => ({
@@ -16,9 +23,6 @@ const createInstance = (typeId/*: TypeID*/)/*: Instance*/ => ({
   typeId,
 });
 
-const exported = {
-  createInstance
-};
+const createValue = createInstance;
 
-export default exported;
-export { createInstance };
+export { createInstance, createValue };

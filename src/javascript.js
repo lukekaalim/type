@@ -1,8 +1,11 @@
 // @flow strict
 /*::
-export type { Scope, ScopeID } from './javascript/scope';
-export type { Assignment, AssignmentID } from './javascript/assignment';
-export type { Identifier, IdentifierID } from './javascript/identifier';
+export type * from './javascript/scope';
+export type * from './javascript/assignment';
+export type * from './javascript/identifier';
 
-export type { LumberState } from './javascript/parser';
+export type * from './javascript/parser';
 */
+export * from './javascript/scope';
+export * from './javascript/identifier';
+export * from './javascript/assignment';

@@ -1,17 +1,18 @@
 // @flow strict
 import generateUUID from 'uuid/v4';
+import immutable from 'immutable';
+const { Map, List, Record } = immutable;
 /*::
-import type { List } from 'immutable';
+import type { RecordOf, RecordFactory } from 'immutable';
 import type { Identifier, IdentifierID } from './identifier';
-import type { AssignmentID } from './assignment';
 */
 /*::
 type ScopeID = string;
 type Scope = {
   id: ScopeID,
-  identifierAssignments: List<AssignmentID>,
   closure: ScopeID,
 };
+
 
 export type {
   ScopeID,
@@ -19,9 +20,8 @@ export type {
 };
 */
 
-const createScope = (identifierAssignments/*: List<AssignmentID>*/, closure/*: ScopeID*/)/*: Scope*/ => ({
+const createScope = (closure/*: ScopeID*/)/*: Scope*/ => ({
   id: generateUUID(),
-  identifierAssignments,
   closure,
 });
 

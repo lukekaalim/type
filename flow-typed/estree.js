@@ -44,6 +44,9 @@ declare type EstreeStatement =
   | EstreeVariableDeclaration
   | EstreeBlockStatement
 
+declare type EstreeExpression =
+  | EstreeArrowFunctionExpression
+
 declare type EstreeArrowFunctionExpression = {
   type: 'ArrowFunctionExpression',
   start: number,
