@@ -4,7 +4,7 @@ const { assert } = test;
 
 import immutable from 'immutable';
 const { Map } = immutable;
-import { parseArrowFunctionExpression } from './function.js';
+import { createFunction } from './function.js';
 import { createLumberState } from '../parser.js';
 import { createSourceLocation } from '../source.js';
 import { createTypeToken } from '../token.js';
@@ -51,7 +51,7 @@ const expectFunction = () => {
       body: [],
     },
   };
-  const jsFunction = parseArrowFunctionExpression(state, expression);
+  const jsFunction = createFunction(state, expression);
   const signatureCount = jsFunction.signatures.length;
   return assert('Function should generate a signature with a matching type', signatureCount === 1);
 };

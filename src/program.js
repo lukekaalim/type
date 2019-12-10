@@ -15,12 +15,26 @@ import type { VariantRelationship, VariantRelationshipID, IntersectionRelationsh
 
 import type { RecordOf, RecordFactory } from 'immutable';
 
-export opaque type ProgramID = string;
+export opaque type ProgramID: string = string;
 export type Program = {
   id: ProgramID,
-  statements: List<Statement>,
-  executionOrder: List<StatementID>,
-  initialState: RecordOf<ProgramState>,
+
+  statements: Map<StatementID, Statement>,
+  types: Map<TypeID, Type>,
+  values: Map<ValueID, Value>,
+  intersections: Map<IntersectionID, Intersection>,
+  variants: Map<VariantID, Variant>,
+
+  initialRuntimeState: RuntimeState,
+
+  executionOrder: Set<StatementID>,
+
+  inputs: ValueID[],
+  outputs: ValueID[],
+};
+
+export type RuntimeState = {
+  constraints: Map<ConstraintID, Constraint>,
 };
 
 export type ProgramState = {

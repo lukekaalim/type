@@ -25,6 +25,7 @@ import type { JSValues } from '../values';
 import type { Program } from '../../program';
 import type { FunctionSignature } from '../signature';
 import type { Relationship } from '../../relationship';
+import type { Value } from '../../instance';
 */
 
 const findAnnotation = (state, arrowFunctionExpression) => {
@@ -41,7 +42,8 @@ type JSFunctionID = string;
 type JSFunction = {
   id: JSFunctionID,
   type: Type,
-  values: RecordOf<JSValues>,
+  value: Value,
+  values: JSValues,
   signatures: FunctionSignature[],
   program: RecordOf<Program>,
 };
@@ -71,17 +73,17 @@ const createParamValues = (state, parametersAnnotations) => {
   return paramsAnnotation.map(token =>  createInstance(token.typeId));
 };
 
-const parseArrowFunctionExpression = (
-  state/*: RecordOf<LumberState>*/,
+const createFunction = (
+  state/*: LumberState*/,
   arrowFunctionExpression/*: EstreeArrowFunctionExpression*/,
   annotation/*: FunctionExpressionAnnotation*/ = findAnnotation(state, arrowFunctionExpression)
 )/*: JSFunction*/ => {
   const type = createSimpleType();
-  const instance = createInstance(type.id);
+  const value = createInstance(type.id);
 
   const paramInstances = createParamValues(state, annotation.parameters);
-  const valueTokens = paramInstances.map((instance, index) =>
-    createInstanceToken(arrowFunctionExpression.params[index].name, instance.id)
+  const valueTokens = paramInstances.map((value, index) =>
+    createInstanceToken(arrowFunctionExpression.params[index].name, value.id)
   );
 
   const functionInitialState = state
@@ -100,6 +102,7 @@ const parseArrowFunctionExpression = (
   return {
     id: generateUUID(),
     type,
+    value,
     values,
     signatures,
     program,
@@ -110,9 +113,11 @@ const generateRelationshipsForFunctions = (functionTypeId/*: TypeID*/, functions
   return [createVariantRelationship(functionTypeId, functions.map(func => func.type.id).toArray())];
 };
 
-const generateTypesForFunctions = (functions/*: List<JSFunction>*/) => {
+const generateTypesForFunctions = (functions/*: List<JSFunction>*/)/*: Type[]*/ => {
   return functions
-    .map(func => func.type);
+    .map(func => func.signatures)
+    .reduce((a, c) => [...a, ...c], [])
+    .map(sigs => createSimpleType())
 };
 
-export { parseArrowFunctionExpression, generateRelationshipsForFunctions, generateTypesForFunctions };
+export { createFunction, generateRelationshipsForFunctions, generateTypesForFunctions };

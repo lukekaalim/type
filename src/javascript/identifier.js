@@ -1,9 +1,9 @@
 // @flow strict
 import generateUUID from 'uuid/v4';
 /*::
-import type { JSFunctionID } from './jsValues/function';
-import type { JSNumberID } from './jsValues/number';
-import type { JSBooleanID } from './jsValues/boolean';
+import type { JSFunctionID } from './values/function';
+import type { JSNumberID } from './values/number';
+import type { JSBooleanID } from './values/boolean';
 import type { ScopeID } from '../javascript';
 */
 /*::

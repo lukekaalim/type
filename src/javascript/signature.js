@@ -64,7 +64,7 @@ const createParamter = (typeId, constraints)/*: Parameter*/ => ({
 });
 
 const createFunctionSignature = (
-  lumber/*: RecordOf<LumberState>*/,
+  lumber/*: LumberState*/,
   sawmill/*: RecordOf<ProgramState>*/,
 )/*: FunctionSignature*/ => {
   const { returnValueId, throwValueId, argumentValuesIds } = lumber;

@@ -3,6 +3,7 @@ import { mountVariableDeclaration } from './variableDeclaration.js';
 import { createScope } from '../../javascript';
 /*::
 import type { LumberState, ScopeID } from '../../javascript';
+import type { RecordOf } from 'immutable';
 */
 
 const mountBlockStatement = (lumber/*: LumberState*/, closure/*: ScopeID*/, block/*: EstreeBlockStatement*/) => {
@@ -11,6 +12,8 @@ const mountBlockStatement = (lumber/*: LumberState*/, closure/*: ScopeID*/, bloc
     switch (statement.type) {
       case 'VariableDeclaration':
         return mountVariableDeclaration(lumber, closure, statement);
+      default:
+        return lumber;
     }
   }, lumber)
 };

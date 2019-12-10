@@ -37,14 +37,14 @@ export type BranchStatement = {
   elseProgram: RecordOf<Program>,
 }
 
-export type DeclareBranchStatement = {
+export type SubprogramStatement = {
   id: StatementID,
-  type: 'declare-if-branch',
-  targetTypeId: TypeID,
-  instanceIdToRefine: InstanceID,
-  hitProgram: Program,
-  missProgram: Program,
-};
+  type: 'subprogram',
+  program: RecordOf<Program>,
+
+  parameters: InstanceID[],
+  result: Instance,
+}
 
 export type Statement =
   | ExitStatement

@@ -33,7 +33,7 @@ import { parseArrowFunctionExpression } from './jsValues/function.js';
 import { createAnnotationFromString } from './annotationParser.js';
 
 /*:: 
-export type LumberState = {
+type LumberStateProps = {
   // Meta type information
   sourceCode: string,
   annotations: Map<SourceLocation, AnnotationStatement>,
@@ -49,17 +49,19 @@ export type LumberState = {
   initialSawmillState: RecordOf<ProgramState>,
   statements: List<Statement>,
 
-  values: RecordOf<JSValues>,
+  values: JSValues,
   // signature generation (this should be abstracted)
   returnValueId: null | InstanceID,
   throwValueId: null | InstanceID,
   argumentValuesIds: List<InstanceID>,
 };
+
+export type LumberState = RecordOf<LumberStateProps>;
 */
 
 const initialPrimitives = createEcmaScriptPrimitives();
 
-const createLumberState/*: RecordFactory<LumberState>*/ = Record({
+const createLumberState/*: RecordFactory<LumberStateProps>*/ = Record({
   sourceCode: '',
   annotations: Map(),
   primitives: initialPrimitives,
@@ -164,7 +166,7 @@ const ifStatement = (state, node) => {
     )
 };
 
-const statement = (body/*: EstreeStatement[]*/, initialState/*: RecordOf<LumberState>*/)/*: RecordOf<LumberState>*/ => {
+const statement = (body/*: EstreeStatement[]*/, initialState/*: LumberState*/)/*: LumberState*/ => {
   return body.reduce((state, node) => {
     switch (node.type) {
       case 'IfStatement':
@@ -187,7 +189,7 @@ const createNumericRelationship = (state, literalNumberValue) => {
     )
 };
 
-const createStaticRelationships = (state/*: RecordOf<LumberState>*/) => {
+const createStaticRelationships = (state/*: LumberState*/) => {
   const types = generateTypesForValues(state.values);
   const relationships = generateRelationshipsForTypes(state.primitives, state.values);
 
@@ -200,7 +202,7 @@ const createStaticRelationships = (state/*: RecordOf<LumberState>*/) => {
 
 const getProgramFromSource = (
   source/*: string*/,
-  initialState/*: RecordOf<LumberState>*/ = createLumberState()
+  initialState/*: LumberState*/ = createLumberState()
 ) => {
   const commentAnnotations = [];
   const onComment = (isBlock, content, start, end) => {
