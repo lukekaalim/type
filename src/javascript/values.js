@@ -8,7 +8,7 @@ import { generateRelationshipsForFunctions, generateTypesForFunctions } from './
 import { createSimpleType } from '../type.js';
 
 /*::
-import type { JSFunction, JSFunctionID } from './values/function';
+import type { JSFunction, JSFunctionID, JSFunctionReference } from './values/function';
 import type { JSBoolean, JSBooleanID } from './values/boolean';
 import type { JSNumber, JSNumberID } from './values/number';
 
@@ -17,8 +17,8 @@ import type { Type } from '../type.js';
 import type { RecordFactory, RecordOf } from 'immutable';
 import type { VariantRelationship } from '../relationship';
 
-export type JSReference =
-  | { type: 'function', id: JSFunctionID }
+export type JSValueReference =
+  | JSFunctionReference
   | { type: 'boolean', id: JSBooleanID }
   | { type: 'number', id: JSNumberID }
 

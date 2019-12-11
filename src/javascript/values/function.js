@@ -36,21 +36,39 @@ const findAnnotation = (state, arrowFunctionExpression) => {
     createFunctionAnnotation([], null, null),
   );
 };
+/*
+  # Javascript Functions!
+
+  This data type represents a function declaration or expression inside javascript
+  They tend to look like:
+
+  ```javascript
+    const myFunction = () => {};
+    function myOtherFunction() {}
+    (() => void 0)()
+  ```
+  and so on and so forth.
+*/
 
 /*::
 type JSFunctionID = string;
 type JSFunction = {
   id: JSFunctionID,
   type: Type,
-  value: Value,
   values: JSValues,
   signatures: FunctionSignature[],
   program: RecordOf<Program>,
 };
 
+type JSFunctionReference = {
+  type: 'function',
+  id: JSFunctionID,
+};
+
 export type {
   JSFunction,
   JSFunctionID,
+  JSFunctionReference,
 };
 */
 
@@ -102,7 +120,6 @@ const createFunction = (
   return {
     id: generateUUID(),
     type,
-    value,
     values,
     signatures,
     program,
@@ -120,4 +137,14 @@ const generateTypesForFunctions = (functions/*: List<JSFunction>*/)/*: Type[]*/ 
     .map(sigs => createSimpleType())
 };
 
-export { createFunction, generateRelationshipsForFunctions, generateTypesForFunctions };
+const createFunctionReference = (id/*: JSFunctionID*/)/*: JSFunctionReference*/ => ({
+  type: 'function',
+  id,
+});
+
+export {
+  createFunction,
+  createFunctionReference,
+  generateRelationshipsForFunctions,
+  generateTypesForFunctions,
+};

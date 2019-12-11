@@ -1,20 +1,22 @@
 // @flow strict
 /*::
-import type { LumberState, JSValues, ScopeID, IdentifierID } from '../../javascript';
-import type { Value } from '../../instance';
+import type { LumberState, JSValues, JSValueReference, ScopeID, IdentifierID } from '../../javascript';
+import type { TypeID } from '../../type';
 */
-import { createFunction, mergeValues } from '../../javascript.js';
+import { createFunction, createFunctionReference, mergeValues, } from '../../javascript.js';
 import { compose2 } from 'compose-typed';
 
-const mountExpression = (lumber/*: LumberState*/, scopeId/*: ScopeID*/, expression/*: EstreeExpression*/)/*: [Value, LumberState]*/ => {
+const mountExpression = (lumber/*: LumberState*/, scopeId/*: ScopeID*/, expression/*: EstreeExpression*/)/*: [JSValueReference, LumberState]*/ => {
   switch (expression.type) {
     case 'ArrowFunctionExpression': {
-      const func = createFunction(lumber, expression);
-      
-      const stateWithValue = lumber
-        .update('values', values => mergeValues(values, func.values));
+      const newFunction = createFunction(lumber, expression);
+      const newFunctionReference = createFunctionReference(newFunction.id);
 
-      return [func.value, stateWithValue];
+      return [
+        newFunctionReference,
+        lumber
+          .update('values', values => mergeValues(values, newFunction.values))
+      ];
     }
     default:
       throw new Error(`Unsupported expression type: ${expression.type}`);

@@ -11,7 +11,7 @@ import type { SourceLocation } from './source.js';
 import type { ECMAScriptPrimitives } from './ecma.js';
 import type { AnnotationStatement } from './annotation.js';
 import type { JSValues } from './values.js';
-import type { ScopeID, Scope, IdentifierID, Identifier } from '../javascript';
+import type { ScopeID, Scope, IdentifierID, Identifier, AssignmentID, Assignment } from '../javascript';
 */
 import immutable from 'immutable';
 const { Record, Map, List } = immutable;
@@ -44,6 +44,7 @@ type LumberStateProps = {
   functionSignatures: List<FunctionSignature>,
   scopes: Map<ScopeID, Scope>,
   identifiers: Map<IdentifierID, Identifier>,
+  assignments: Map<AssignmentID, Assignment>,
   // sawmill program generation
   // (this should just be a program);
   initialSawmillState: RecordOf<ProgramState>,
@@ -72,6 +73,7 @@ const createLumberState/*: RecordFactory<LumberStateProps>*/ = Record({
 
   scopes: Map(),
   identifers: Map(),
+  assignments: Map(),
 
   initialSawmillState: createProgramState(),
 

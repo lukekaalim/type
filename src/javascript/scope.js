@@ -10,7 +10,7 @@ import type { Identifier, IdentifierID } from './identifier';
 type ScopeID = string;
 type Scope = {
   id: ScopeID,
-  closure: ScopeID,
+  closure: ScopeID | null,
 };
 
 

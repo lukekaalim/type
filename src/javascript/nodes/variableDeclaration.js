@@ -1,5 +1,5 @@
 // @flow strict
-import { createIdentifier, mountExpression } from '../../javascript';
+import { createIdentifier, mountExpression, createAssignment } from '../../javascript';
 /*::
 import type { LumberState, ScopeID } from '../../javascript';
 import type { RecordOf } from 'immutable';
@@ -11,7 +11,14 @@ const mountDeclarator = (state, closure, declarator) => {
   const stateWithIdentifier = state
     .update('identifiers', identifiers => identifiers.set(identifier.id, identifier));
 
-  return mountExpressionToIdentifier(stateWithIdentifier, identifier, closure, declarator.init);
+  const [reference, stateWithValue] = mountExpression(stateWithIdentifier, closure, declarator.init);
+
+  const assignment = createAssignment(identifier.id, reference);
+
+  const stateWithAssignment = stateWithValue
+    .update('assignments', assignments => assignments.set(assignment.id, assignment))
+
+  return stateWithAssignment;
 }
 
 const mountVariableDeclaration = (state/*: LumberState*/, closure/*: ScopeID*/, declaration/*: EstreeVariableDeclaration*/) => {

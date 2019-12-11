@@ -40,10 +40,10 @@ export type BranchStatement = {
 export type SubprogramStatement = {
   id: StatementID,
   type: 'subprogram',
-  program: RecordOf<Program>,
+  program: Program,
 
-  parameters: InstanceID[],
-  result: Instance,
+  inputConstraints: Constraint[],
+  outputConstraints: Constraint[],
 }
 
 export type Statement =
@@ -51,6 +51,7 @@ export type Statement =
   | CreateValueStatement
   | ConstrainStatement
   | BranchStatement
+  | SubprogramStatement
 */
 
 const createValue = (value/*: Instance*/)/*: CreateValueStatement*/ => ({
