@@ -1,6 +1,7 @@
 // @flow strict
 import immutable from 'immutable';
 const { Map, Record, List } = immutable;
+import type { ValueID, Value, IntersectionRelationship, VariantRelationship } from './lumber';
 
 import { areTypesCompatible } from './compatibility.js';
 import { UnimplementedError } from './errors.js';
@@ -10,8 +11,8 @@ import type { Statement, StatementID } from './statements.js';
 import type { TypeID, Type } from './type.js';
 import type { TokenID, Token } from './token.js';
 import type { Constraint } from './constraint.js';
-import type { InstanceID, Instance } from './instance.js';
-import type { VariantRelationship, VariantRelationshipID, IntersectionRelationshipID, IntersectionRelationship } from './relationship.js';
+
+type IDMap<T> = Map<$PropertyType<T, 'id'>, T>;
 
 import type { RecordOf, RecordFactory } from 'immutable';
 
@@ -19,61 +20,31 @@ export opaque type ProgramID: string = string;
 export type Program = {
   id: ProgramID,
 
-  statements: Map<StatementID, Statement>,
-  types: Map<TypeID, Type>,
-  values: Map<ValueID, Value>,
-  intersections: Map<IntersectionID, Intersection>,
-  variants: Map<VariantID, Variant>,
+  statements: IDMap<Statement>,
+  types: IDMap<Type>,
+  values: IDMap<Value>,
 
-  initialRuntimeState: RuntimeState,
+  intersections: IDMap<IntersectionRelationship>,
+  variants: IDMap<VariantRelationship>,
 
-  executionOrder: Set<StatementID>,
-
+  executionOrder: StatementID[],
   inputs: ValueID[],
   outputs: ValueID[],
 };
 
-export type RuntimeState = {
-  constraints: Map<ConstraintID, Constraint>,
-};
-
-export type ProgramState = {
-  types: Map<TypeID, Type>,
-  values: Map<InstanceID, Instance>,
-  constraints: Map<InstanceID, List<Constraint>>,
-  variantRelationships: List<VariantRelationship>,
-  intersectionRelationships: List<IntersectionRelationship>,
-  exited: boolean,
+export type Speculation = {
+  constraints: IDMap<Constraint>,
+  terminated: boolean,
 };
 */
 
-const createProgramState/*: RecordFactory<ProgramState>*/ = Record({
-  types: Map(),
-  values: Map(),
+const createSpeculation = ()/*: Speculation*/  => ({
+  terminated: false,
   constraints: Map(),
-  variantRelationships: List(),
-  intersectionRelationships: List(),
-  exited: false,
 });
 
-const createProgram/*: RecordFactory<Program>*/ = Record({
-  id: '0',
-  statements: List(),
-  initialState: createProgramState(),
-});
-
-const flatten = list => list.reduce((acc, curr) => [...acc, ...curr], []);
-
-const runProgram = (
-  program/*: RecordOf<Program>*/,
-  initialState/*: RecordOf<ProgramState>*/ = createProgramState(),
-) => {
-  return program.statements
-    .reduce/*:: <RecordOf<ProgramState>[]>*/((states, statement) =>
-      flatten(states.map(state => reduceState(state, statement))),
-      [initialState]
-    )
-    .map/*:: <RecordOf<ProgramState>>*/(state => state.set('exited', true));
+const runProgram = (program/*: Program*/, initialSpeculations/*: Speculation[]*/ = [createSpeculation()])/*: Speculation[]*/ => {
+  return initialSpeculations;
 };
 
 const reduceState = (state/*: RecordOf<ProgramState>*/, statement) => {
@@ -103,11 +74,4 @@ const reduceState = (state/*: RecordOf<ProgramState>*/, statement) => {
   }
 };
 
-const exported = {
-  createProgram,
-  createProgramState,
-  runProgram
-};
-
-export default exported;
 export { createProgram, createProgramState, runProgram };

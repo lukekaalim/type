@@ -25,6 +25,7 @@ import type { JSValues } from '../values';
 import type { Program } from '../../program';
 import type { FunctionSignature } from '../signature';
 import type { Relationship } from '../../relationship';
+import type { ScopeID } from '../../javascript';
 import type { Value } from '../../instance';
 */
 
@@ -93,6 +94,7 @@ const createParamValues = (state, parametersAnnotations) => {
 
 const createFunction = (
   state/*: LumberState*/,
+  closure/*: ScopeID*/,
   arrowFunctionExpression/*: EstreeArrowFunctionExpression*/,
   annotation/*: FunctionExpressionAnnotation*/ = findAnnotation(state, arrowFunctionExpression)
 )/*: JSFunction*/ => {
