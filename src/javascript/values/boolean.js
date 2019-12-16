@@ -2,7 +2,7 @@
 import generateUUID from 'uuid/v4.js';
 
 import { createSimpleType } from '../../type.js';
-import { createVariantRelationship } from '../../relationship';
+import { createVariantRelationship } from '../../relationship.js';
 /*::
 import type { Type, TypeID } from '../../type';
 import type { List } from 'immutable';

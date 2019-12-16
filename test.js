@@ -5,7 +5,8 @@ const { assert, colorReporter, unicodeReporter } = lktest;
 import { testJavascript } from './src/javascript.test.js';
 import { testRefinement } from './src/refinement.test.js';
 import { expectSource } from './src/javascript/source.test.js';
-import { expectFunction } from './src/javascript/jsValues/function.test.js';
+import { expectFunction } from './src/javascript/values/function.test.js';
+import { expectAnnotationParser } from './src/javascript/annotationParser.test.js';
 import { promises } from 'fs';
 
 const { writeFile } = promises;
@@ -14,10 +15,11 @@ const testType = async () => {
   try {
     process.stdout.write('\u001bc')
     const assertion = assert('@lukekaalim/type should provide a safe typing language', [
-      await testJavascript(),
-      await testRefinement(),
-      await expectSource(),
-      await expectFunction(),
+      //await testJavascript(),
+      //await testRefinement(),
+      //await expectSource(),
+      //await expectFunction(),
+      await expectAnnotationParser(),
     ]);
     console.log(colorReporter(assertion));
     await writeFile('./test.log', unicodeReporter(assertion));

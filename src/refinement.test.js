@@ -8,7 +8,6 @@ const { List } = immutable;
 import { assertToDo } from './assertions.test.js';
 import { createRefinementsForTypeId } from './refinement.js';
 import { areTypesCompatible } from './compatibility.js';
-import { createProgramState } from './program.js';
 import { createSimpleType } from './type.js';
 import { createInstance } from './instance.js';
 import { createConstraint } from './constraint.js';

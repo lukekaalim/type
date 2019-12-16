@@ -1,10 +1,15 @@
 // @flow strict
 /*::
-type AnnotationSourceLocation = {
-
-};
+import type { AcornComment } from 'acorn';
 */
 import { createFunctionAnnotation, createTypeAnnotation } from './annotation.js';
+
+const createAnnotationFromComment = (comment/*: AcornComment*/) => {
+  if (comment.value.startsWith('?')) {
+    return null;
+  }
+  return createAnnotationFromString(comment.value.slice(1));
+};
 
 const createAnnotationFromString = (inputString/*: string*/) => {
   const jsonParsed = JSON.parse(inputString);

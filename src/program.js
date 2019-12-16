@@ -1,12 +1,12 @@
 // @flow strict
 import immutable from 'immutable';
-const { Map, Record, List, OrderedSet } = immutable;
-import type { ValueID, Value, IntersectionRelationship, VariantRelationship } from './lumber';
+const { Map, Record, List } = immutable;
 
 import { areTypesCompatible } from './compatibility.js';
 import { UnimplementedError } from './errors.js';
 import { createRefinementsForTypeId } from './refinement.js';
 /*::
+import type { ValueID, Value, IntersectionRelationship, VariantRelationship } from './sawmill';
 import type { Statement, StatementID } from './statements.js';
 import type { Type } from './type.js';
 import type { Token } from './token.js';
@@ -36,15 +36,6 @@ export type Speculation = {
 };
 */
 
-const createSpeculation = ()/*: Speculation*/  => ({
-  terminated: false,
-  constraints: Map(),
-});
-
-const runProgram = (program/*: Program*/, initialSpeculations/*: Speculation[]*/ = [createSpeculation()])/*: Speculation[]*/ => {
-  return initialSpeculations;
-};
-
 const reduceState = (state/*: RecordOf<ProgramState>*/, statement) => {
   if (state.exited) {
     return [state];
@@ -72,4 +63,4 @@ const reduceState = (state/*: RecordOf<ProgramState>*/, statement) => {
   }
 };
 
-export { createProgram, createProgramState, runProgram };
+export {  };

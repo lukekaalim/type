@@ -7,7 +7,6 @@ import immutable from 'immutable';
 /*::
 import type { Type, TypeID } from './type.js';
 import type { InstanceID, Instance } from './instance.js';
-import type { ProgramState } from './program.js';
 import type { Constraint } from './constraint.js';
 import type { Token } from './token.js';
 import type { VariantRelationship } from './relationship.js';

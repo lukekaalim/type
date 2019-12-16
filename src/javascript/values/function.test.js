@@ -5,7 +5,6 @@ const { assert } = test;
 import immutable from 'immutable';
 const { Map } = immutable;
 import { createFunction } from './function.js';
-import { createLumberState } from '../parser.js';
 import { createSourceLocation } from '../source.js';
 import { createTypeToken } from '../token.js';
 import { createEcmaScriptPrimitives } from '../ecma.js';

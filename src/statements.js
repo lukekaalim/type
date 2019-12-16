@@ -1,7 +1,6 @@
 // @flow strict
 import generateUUID from 'uuid/v4.js';
 
-import { createProgram } from './program.js';
 /*::
 import type { TypeID, Type } from './type.js';
 import type { Instance, InstanceID } from './instance.js';

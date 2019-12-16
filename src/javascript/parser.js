@@ -23,13 +23,12 @@ import { createSourceLocation } from './source.js';
 import { createInstanceToken } from './token.js';
 import { createInstance } from '../instance.js';
 import { createSimpleType } from '../type.js';
-import { createProgram, runProgram, createProgramState } from '../program.js';
+//import { createProgram, runProgram, createProgramState } from '../program.js';
 import { exit, createValue, constrain, branch } from '../statements.js';
 import { createConstraint } from '../constraint.js';
 import { generateTypesForValues, generateRelationshipsForTypes, createJsValues } from './values.js';
 import { createEcmaScriptPrimitives, createTypeTokensForPrimitives } from './ecma.js';
 import { createVariantRelationship } from '../relationship.js';
-import { parseArrowFunctionExpression } from './jsValues/function.js';
 import { createAnnotationFromString } from './annotationParser.js';
 
 /*:: 
@@ -85,21 +84,13 @@ const createLumberState/*: RecordFactory<LumberStateProps>*/ = Record({
   argumentValuesIds: List(),
 }, 'JSParserState');
 
-const getProgramFromSource = (
-  source/*: string*/,
-  initialState/*: LumberState*/ = createLumberState()
-) => {
-  const commentAnnotations = [];
-  const onComment = (isBlock, content, start, end) => {
-    commentAnnotations.push([createSourceLocation(start, end), createAnnotationFromString(content)]);
-  };
-  const estree = parse(source, { onComment });
-  const stateWithAnnotations = initialState
-    .update('annotations', annotations => annotations.merge(commentAnnotations));
-  const stateWithSource = stateWithAnnotations
-    .set('sourceCode', source);
+const parseJavascript = (
+  source/*: string*/
+)/*: LumberState*/ => {
+  const comments = [];
+  const estree = parse(source, { onComment: comments, location: true });
+  
 
-  return createStaticRelationships(statement(estree.body, stateWithSource));
 };
 
-export { createLumberState, getProgramFromSource, createStaticRelationships, statement };
+export { parseJavascript };

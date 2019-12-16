@@ -9,8 +9,6 @@ import { createInstance } from '../../instance.js';
 import { createFunctionAnnotation } from '../annotation.js';
 import { createSourceLocation } from '../source.js';
 import { createInstanceToken } from '../token.js';
-import { createStaticRelationships, statement } from '../parser.js';
-import { runProgram, createProgram } from '../../program.js';
 import { createValue } from '../../statements.js';
 import { createFunctionSignature } from '../signature.js';
 import { createVariantRelationship } from '../../relationship.js';
