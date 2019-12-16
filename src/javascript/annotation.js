@@ -10,36 +10,45 @@ import type { RecordFactory } from 'immutable';
 */
 
 /*::
-export type TypeIdentifierAnnotationID = string;
-export type TypeIdentifierAnnotation = {
+type TypeIdentifierAnnotationID = string;
+type TypeIdentifierAnnotation = {
   id: TypeIdentifierAnnotationID,
   type: 'type-identifier',
   identifier: string,
 };
 
-export type ValueLiteralAnnotationID = string;
-export type ValueLiteralAnnotation = {
+type ValueLiteralAnnotationID = string;
+type ValueLiteralAnnotation = {
   id: ValueLiteralAnnotationID,
   type: 'value-literal',
   literal: string,
 };
 
-export type ExpressionAnnotation =
+type AnnotationExpression =
+  | FunctionExpressionAnnotation
   | TypeIdentifierAnnotation
   | ValueLiteralAnnotation
 
-export type FunctionExpressionAnnotationID = string;
-export type FunctionExpressionAnnotation = {
+type FunctionExpressionAnnotationID = string;
+type FunctionExpressionAnnotation = {
   id: FunctionExpressionAnnotationID,
   type: 'function-expression',
 
-  parameters: ExpressionAnnotation[],
-  returns: null | ExpressionAnnotation,
-  throws: null | ExpressionAnnotation,
+  parameters: AnnotationExpression[],
+  returns: null | AnnotationExpression,
+  throws: null | AnnotationExpression,
 };
 
-export type AnnotationStatement =
-  | FunctionExpressionAnnotation
+type AnnotationStatement = {
+  expression: AnnotationExpression
+};
+
+export type {
+  AnnotationStatement,
+  AnnotationExpression,
+
+  FunctionExpressionAnnotation,
+};
 */
 
 const createTypeAnnotation = (

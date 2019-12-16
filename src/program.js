@@ -1,6 +1,6 @@
 // @flow strict
 import immutable from 'immutable';
-const { Map, Record, List } = immutable;
+const { Map, Record, List, OrderedSet } = immutable;
 import type { ValueID, Value, IntersectionRelationship, VariantRelationship } from './lumber';
 
 import { areTypesCompatible } from './compatibility.js';
@@ -8,11 +8,9 @@ import { UnimplementedError } from './errors.js';
 import { createRefinementsForTypeId } from './refinement.js';
 /*::
 import type { Statement, StatementID } from './statements.js';
-import type { TypeID, Type } from './type.js';
-import type { TokenID, Token } from './token.js';
-import type { Constraint } from './constraint.js';
-
-type IDMap<T> = Map<$PropertyType<T, 'id'>, T>;
+import type { Type } from './type.js';
+import type { Token } from './token.js';
+import type { Constraint, ConstraintID } from './constraint.js';
 
 import type { RecordOf, RecordFactory } from 'immutable';
 
@@ -20,20 +18,20 @@ export opaque type ProgramID: string = string;
 export type Program = {
   id: ProgramID,
 
-  statements: IDMap<Statement>,
-  types: IDMap<Type>,
-  values: IDMap<Value>,
+  statements: Statement[],
+  types: Type[],
+  values: Value[],
 
-  intersections: IDMap<IntersectionRelationship>,
-  variants: IDMap<VariantRelationship>,
+  intersections: IntersectionRelationship[],
+  variants: VariantRelationship[],
 
-  executionOrder: StatementID[],
+  executionOrder: OrderedSet<StatementID>,
   inputs: ValueID[],
   outputs: ValueID[],
 };
 
 export type Speculation = {
-  constraints: IDMap<Constraint>,
+  constraints: Map<ConstraintID, Constraint>,
   terminated: boolean,
 };
 */

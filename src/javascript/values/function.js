@@ -24,7 +24,6 @@ import type { RecordOf } from 'immutable';
 import type { JSValues } from '../values';
 import type { Program } from '../../program';
 import type { FunctionSignature } from '../signature';
-import type { Relationship } from '../../relationship';
 import type { ScopeID } from '../../javascript';
 import type { Value } from '../../instance';
 */
@@ -96,7 +95,7 @@ const createFunction = (
   state/*: LumberState*/,
   closure/*: ScopeID*/,
   arrowFunctionExpression/*: EstreeArrowFunctionExpression*/,
-  annotation/*: FunctionExpressionAnnotation*/ = findAnnotation(state, arrowFunctionExpression)
+  annotation/*: ?FunctionExpressionAnnotation*/,
 )/*: JSFunction*/ => {
   const type = createSimpleType();
   const value = createInstance(type.id);
