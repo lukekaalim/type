@@ -14,10 +14,11 @@ declare module 'acorn' {
 
   declare type AcornConfig = {
     onComment?: Array<AcornComment> | (isBlock: boolean, comment: string, start: number, end: number) => void,
-    locations?: boolean,
+    locations: true,
+    sourceType: 'module',
   }
 
-  declare function parse(sourceCode: string, config?: AcornConfig): EstreeProgram;
+  declare function parse(sourceCode: string, config: AcornConfig): EstreeProgram;
   declare module.exports: {
     parse: typeof parse
   };

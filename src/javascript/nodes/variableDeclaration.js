@@ -1,5 +1,5 @@
 // @flow strict
-import { createIdentifier, mountExpression, createAssignment } from '../../javascript';
+import { createIdentifier, mountExpression, createAssignment } from '../../javascript.js';
 /*::
 import type { LumberState, ScopeID } from '../../javascript';
 import type { RecordOf } from 'immutable';

@@ -1,5 +1,5 @@
 // @flow strict
-import generateUUID from 'uuid/v4';
+import generateUUID from 'uuid/v4.js';
 /*::
 import type { JSFunctionID } from './values/function';
 import type { JSNumberID } from './values/number';

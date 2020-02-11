@@ -1,5 +1,6 @@
 // @flow strict
 import generateUUID from 'uuid/v4.js';
+import { parse } from '../../lib/lktype-parser.js';
 /*::
 import type { IdentifierID, JSValueReference } from '../javascript';
 */

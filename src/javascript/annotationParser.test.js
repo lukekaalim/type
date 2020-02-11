@@ -1,7 +1,7 @@
 // @flow strict
-import { assert } from '@lukekaalim/test';
+import test from '@lukekaalim/test';
 
-const expectAnnotationParser = () => assert('createAnnotationFromComment() should turn acorn comment objects into annotation', () => {
+const expectAnnotationParser = () => test.assert('createAnnotationFromComment() should turn acorn comment objects into annotation', () => {
 
 });
 

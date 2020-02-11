@@ -29,7 +29,7 @@ const parseNumberExpression = (
     id: generateUUID(),
     type: createSimpleType(),
     value: numberValue
-  }
+  };
 };
 
 const generateRelationshipsForNumbers = (numberTypeId/*: TypeID*/, numbers/*: List<JSNumber>*/) => {

@@ -17,7 +17,8 @@ import immutable from 'immutable';
 const { Record, Map, List } = immutable;
 
 import acorn from 'acorn';
-const { parse } = acorn;
+
+import { createDeclaration } from './annotation.js';
 import { createFunctionSignature } from './signature.js';
 import { createSourceLocation } from './source.js';
 import { createInstanceToken } from './token.js';
@@ -34,35 +35,31 @@ import { createAnnotationFromString } from './annotationParser.js';
 /*:: 
 type LumberStateProps = {
   // Meta type information
-  sourceCode: string,
   annotations: Map<SourceLocation, AnnotationStatement>,
   primitives: ECMAScriptPrimitives,
   // Javascript state tracking
-  valueTokens: Map<string, ValueToken>,
-  typeTokens: Map<string, TypeToken>,
-  functionSignatures: List<FunctionSignature>,
   scopes: Map<ScopeID, Scope>,
   identifiers: Map<IdentifierID, Identifier>,
   assignments: Map<AssignmentID, Assignment>,
-  // sawmill program generation
-  // (this should just be a program);
-  initialSawmillState: RecordOf<ProgramState>,
   statements: List<Statement>,
-
   values: JSValues,
+
   // signature generation (this should be abstracted)
   returnValueId: null | InstanceID,
   throwValueId: null | InstanceID,
   argumentValuesIds: List<InstanceID>,
 };
 
-export type LumberState = RecordOf<LumberStateProps>;
+type LumberState = RecordOf<LumberStateProps>;
+
+export type {
+  LumberState,
+};
 */
 
 const initialPrimitives = createEcmaScriptPrimitives();
 
 const createLumberState/*: RecordFactory<LumberStateProps>*/ = Record({
-  sourceCode: '',
   annotations: Map(),
   primitives: initialPrimitives,
 
@@ -73,8 +70,6 @@ const createLumberState/*: RecordFactory<LumberStateProps>*/ = Record({
   scopes: Map(),
   identifers: Map(),
   assignments: Map(),
-
-  initialSawmillState: createProgramState(),
 
   statements: List(),
   values: createJsValues(),
@@ -88,9 +83,11 @@ const parseJavascript = (
   source/*: string*/
 )/*: LumberState*/ => {
   const comments = [];
-  const estree = parse(source, { onComment: comments, location: true });
-  
+  const estree = acorn.parse(source, { onComment: comments, locations: true, sourceType: 'module' });
 
+  const commentAnnotationTexts = comments.filter(comment => comment.value.startsWith('!'));
+  console.log(commentAnnotationTexts[0].value);
+  createDeclaration(commentAnnotationTexts[0].value);
 };
 
 export { parseJavascript };

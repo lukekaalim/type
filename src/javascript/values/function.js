@@ -6,7 +6,6 @@ const { List, Map } = immutable;
 import { getLineFromIndex } from '../source.js';
 import { createSimpleType } from '../../type.js';
 import { createInstance } from '../../instance.js';
-import { createFunctionAnnotation } from '../annotation.js';
 import { createSourceLocation } from '../source.js';
 import { createInstanceToken } from '../token.js';
 import { createValue } from '../../statements.js';
@@ -26,14 +25,6 @@ import type { ScopeID } from '../../javascript';
 import type { Value } from '../../instance';
 */
 
-const findAnnotation = (state, arrowFunctionExpression) => {
-  const functionLine = getLineFromIndex(state.sourceCode, arrowFunctionExpression.start);
-  return state.annotations.find((functionAnnotation, annotationLocation) =>
-    getLineFromIndex(state.sourceCode, annotationLocation.end) + 1 === functionLine,
-    null,
-    createFunctionAnnotation([], null, null),
-  );
-};
 /*
   # Javascript Functions!
 

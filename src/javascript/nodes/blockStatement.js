@@ -1,6 +1,6 @@
 // @flow strict
 import { mountVariableDeclaration } from './variableDeclaration.js';
-import { createScope } from '../../javascript';
+import { createScope } from '../../javascript.js';
 /*::
 import type { LumberState, ScopeID } from '../../javascript';
 import type { RecordOf } from 'immutable';

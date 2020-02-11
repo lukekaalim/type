@@ -2,7 +2,6 @@
 /*::
 import type { AcornComment } from 'acorn';
 */
-import { createFunctionAnnotation, createTypeAnnotation } from './annotation.js';
 
 const createAnnotationFromComment = (comment/*: AcornComment*/) => {
   if (comment.value.startsWith('?')) {

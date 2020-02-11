@@ -11,7 +11,6 @@ import type {
 import type { TypeID } from '../../type';
 */
 import { createFunction, createFunctionReference, mergeValues } from '../../javascript.js';
-import { compose2 } from 'compose-typed';
 
 const mountExpression = (
   lumber/*: LumberState*/,

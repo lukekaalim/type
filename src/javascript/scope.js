@@ -1,5 +1,5 @@
 // @flow strict
-import generateUUID from 'uuid/v4';
+import generateUUID from 'uuid/v4.js';
 import immutable from 'immutable';
 const { Map, List, Record } = immutable;
 /*::
@@ -12,7 +12,6 @@ type Scope = {
   id: ScopeID,
   closure: ScopeID | null,
 };
-
 
 export type {
   ScopeID,
