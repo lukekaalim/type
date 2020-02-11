@@ -1,12 +1,27 @@
 // @flow strict
 
+/*::
+type TypeStatement = {
+  statementType: 'type',
+  declarationExpression: Expression,
+  declarationIdentifier: string,
+};
+
+type NoteStatement = {
+  statementType: 'note',
+  annotationExpression: Expression,
+};
+
+type Statement = NoteStatement | TypeStatement;
+*/
+
 // composed of nothing but whitespace.
 const whitespaceRegex = new RegExp(/^\s*$/);
 
 // the word 'note' or 'type', the two keywords
 const keywordRegex = new RegExp(/^\s*(?<keyword>note|type)/);
 
-const parseSourceToGrammer = (source/*: string*/) => {
+const tokenize = (source/*: string*/)/*: Statement[]*/ => {
   if (whitespaceRegex.test(source))
     return [];
 
@@ -27,7 +42,7 @@ const parseSourceToGrammer = (source/*: string*/) => {
 };
 
 // the end of a statement
-const terminalRegex = new RegExp(/^\s*;/);
+const terminalRegex = new RegExp(/^\s*[;\n]/);
 
 const parseNote = (source/*: string*/) => {
   const [expression, remainingSource] = parseExpression(source);
