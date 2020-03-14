@@ -1,6 +1,13 @@
 // @flow strict
 
 declare module 'acorn' {
+  declare function parse(sourceCode: string, config?: AcornConfig): EstreeProgram;
+
+  declare class Parser {
+    extend: (...plugins: Parser[]) => void,
+    parse: typeof parse,
+  }
+
   declare export type AcornComment = {
     "type": "Line" | "Block",
     "value": string,
@@ -14,12 +21,11 @@ declare module 'acorn' {
 
   declare type AcornConfig = {
     onComment?: Array<AcornComment> | (isBlock: boolean, comment: string, start: number, end: number) => void,
-    locations: true,
-    sourceType: 'module',
+    locations?: true,
+    sourceType?: 'module',
   }
-
-  declare function parse(sourceCode: string, config: AcornConfig): EstreeProgram;
   declare module.exports: {
-    parse: typeof parse
+    parse: typeof parse,
+    Parser: typeof Parser
   };
 }

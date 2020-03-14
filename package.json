@@ -5,9 +5,10 @@
   "main": "src/index",
   "type": "module",
   "dependencies": {
-    "acorn": "^7.1.0",
+    "acorn": "^7.1.1",
+    "fast-glob": "^3.2.2",
     "immutable": "^4.0.0-rc.12",
-    "uuid": "^3.3.3"
+    "uuid": "^3.4.0"
   },
   "devDependencies": {
     "@lukekaalim/test": "^8.0.2",
