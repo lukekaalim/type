@@ -5,7 +5,7 @@
   "main": "src/index",
   "type": "module",
   "dependencies": {
-    "acorn": "^7.1.0",
+    "acorn": "^7.1.1",
     "immutable": "^4.0.0-rc.12",
     "uuid": "^3.3.3"
   },
