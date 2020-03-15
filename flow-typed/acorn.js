@@ -3,9 +3,31 @@
 declare module 'acorn' {
   declare function parse(sourceCode: string, config?: AcornConfig): EstreeProgram;
 
+  declare opaque type VarToken;
+  declare opaque type ConstToken;
+
+  declare var tokenTypes: {
+    _const: ConstToken,
+    _var: VarToken,
+  };
+
   declare class Parser {
-    extend: (...plugins: Parser[]) => void,
-    parse: typeof parse,
+    constructor(options: ?AcornConfig, input: string, startPos?: number): Parser,
+    pos: number,
+    curLine: number,
+    lineStart: number,
+    input: string,
+    options: AcornConfig,
+    skipBlockComment(): void,
+    skipLineComment(count?: number): void,
+    parseStatement(context: {}, topLevel: EstreeProgram, exports: {}): EstreeStatement,
+    parseTopLevel(node: EstreeStatement): EstreeProgram,
+    readToken_slash(): void,
+    getTokenFromCode(code: number): void,
+    readToken(code: number): void,
+    extend(...plugins: Parser[]): Parser,
+    parse(): EstreeProgram,
+    static parse(sourceCode: string, config?: AcornConfig): EstreeProgram,
   }
 
   declare export type AcornComment = {
@@ -26,6 +48,8 @@ declare module 'acorn' {
   }
   declare module.exports: {
     parse: typeof parse,
-    Parser: typeof Parser
+    Parser: typeof Parser,
+    nonASCIIwhitespace: RegExp,
+    tokTypes: typeof tokenTypes,
   };
 }

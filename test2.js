@@ -1,5 +1,5 @@
 // @flow strict
-const { testParser } = require('./src2/parser.test.js');
+const { testParser } = require('./src2/statementAnnotationParser.test.js');
 const { assert, colorReporter } = require('@lukekaalim/test');
 
 const test = async () => {
@@ -14,3 +14,5 @@ const test = async () => {
     console.error(err);
   }
 };
+
+test();
