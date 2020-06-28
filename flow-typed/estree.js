@@ -12,8 +12,8 @@ declare type EstreeIfStatement = {
   start: number,
   end: number,
   test: EstreeIdentifier,
-  consequent: EstreeBlockStatement,
-  alternate: null | EstreeBlockStatement,
+  consequent: EstreeStatement,
+  alternate: null | EstreeStatement,
 }
 
 declare type EstreeLiteral = {
@@ -45,7 +45,13 @@ declare type EstreeStatement =
   | EstreeBlockStatement
 
 declare type EstreeExpression =
+  | EstreeLiteralExpression
   | EstreeArrowFunctionExpression
+
+declare type EstreeLiteralExpression = {
+  type: 'Literal',
+  value: string | boolean | null | number | RegExp,
+};
 
 declare type EstreeArrowFunctionExpression = {
   type: 'ArrowFunctionExpression',
@@ -56,7 +62,7 @@ declare type EstreeArrowFunctionExpression = {
   generator: boolean,
   async: boolean,
   params: EstreeIdentifier[],
-  body: EstreeBlockStatement,
+  body: EstreeStatement,
 }
 
 declare type EstreeVariableDeclarator = {
@@ -64,7 +70,7 @@ declare type EstreeVariableDeclarator = {
   start: number,
   end: number,
   id: EstreeIdentifier,
-  init: EstreeArrowFunctionExpression,
+  init: EstreeExpression
 }
 
 declare type EstreeVariableDeclaration = {

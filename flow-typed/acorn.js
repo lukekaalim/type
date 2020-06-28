@@ -43,7 +43,7 @@ declare module 'acorn' {
 
   declare type AcornConfig = {
     onComment?: Array<AcornComment> | (isBlock: boolean, comment: string, start: number, end: number) => void,
-    locations?: true,
+    locations?: boolean,
     sourceType?: 'module',
   }
   declare module.exports: {

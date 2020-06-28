@@ -5,14 +5,14 @@
   "main": "src/index",
   "type": "commonjs",
   "dependencies": {
-    "acorn": "^7.1.1",
+    "acorn": "^7.3.1",
     "fast-glob": "^3.2.2",
     "immutable": "^4.0.0-rc.12",
     "uuid": "^3.4.0"
   },
   "devDependencies": {
     "@lukekaalim/test": "^8.0.2",
-    "flow-bin": "^0.112.0"
+    "flow-bin": "^0.128.0"
   },
   "scripts": {
     "test": "node test"
